@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contests - Random</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">Random</a>
+            </div>
+            <div class="nav-right" id="auth-section"></div>
+        </div>
+    </nav>
+    <nav class="navbar bottom-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="problems.html" class="nav-link">Problems</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contests.html" class="nav-link">Contests</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-container">
+            <h1 class="page-title">Contests</h1>
+            
+            <!-- Running Contests -->
+            <div class="contest-section" id="running-contests-section" style="display: none;">
+                <h2 class="section-title">Running Now <span class="live-dot"></span></h2>
+                <div class="contests-list" id="running-contests"></div>
+            </div>
+
+            <!-- Upcoming Contests -->
+            <div class="contest-section" id="upcoming-contests-section" style="display: none;">
+                <h2 class="section-title">Upcoming Contests</h2>
+                <div class="contests-grid" id="upcoming-contests"></div>
+            </div>
+
+            <!-- Previous Contests -->
+            <div class="contest-section">
+                <h2 class="section-title">Previous Contests</h2>
+                <div class="contests-grid" id="previous-contests"></div>
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const data = window.appData.contests;
+
+            // Running
+            if (data.running.length > 0) {
+                document.getElementById('running-contests-section').style.display = 'block';
+                const container = document.getElementById('running-contests');
+                data.running.forEach(c => {
+                    container.innerHTML += `
+                        <div class="contest-card live-card">
+                            <h3 class="contest-title">${c.title}</h3>
+                            <p class="contest-meta">Ends in: <span style="color:var(--danger);font-weight:bold;">${c.timeRemaining}</span></p>
+                            <button class="btn btn-accent" style="margin-top: 16px;">Enter Contest</button>
+                        </div>
+                    `;
+                });
+            }
+
+            // Upcoming
+            if (data.upcoming.length > 0) {
+                document.getElementById('upcoming-contests-section').style.display = 'block';
+                const container = document.getElementById('upcoming-contests');
+                data.upcoming.forEach(c => {
+                    container.innerHTML += `
+                        <div class="contest-card">
+                            <h3 class="contest-title">${c.title}</h3>
+                            <p class="contest-meta">Starts in: ${c.timeUntil}</p>
+                            <button class="btn btn-primary" style="margin-top: 16px;">Register</button>
+                        </div>
+                    `;
+                });
+            }
+
+            // Previous
+            const prevContainer = document.getElementById('previous-contests');
+            data.previous.forEach(c => {
+                prevContainer.innerHTML += `
+                    <div class="contest-card">
+                        <h3 class="contest-title">${c.title}</h3>
+                        <p class="contest-meta">Date: ${c.date}</p>
+                        <button class="btn btn-secondary" style="margin-top: 16px; border: 1px solid var(--border-color);">Virtual Participate</button>
+                    </div>
+                `;
+            });
+        });
+    </script>
+</body>
+</html>

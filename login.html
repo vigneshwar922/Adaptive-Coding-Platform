@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Random</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">Random</a>
+            </div>
+            <!-- Auth section left empty on auth pages or minimal -->
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="auth-container">
+            <div class="auth-header">
+                <h1 class="auth-title">Welcome Back</h1>
+                <p class="text-secondary">Please enter your details to sign in.</p>
+            </div>
+            
+            <form id="login-form">
+                <div class="form-group">
+                    <label class="form-label" for="usernameOrEmail">Username or Email</label>
+                    <input type="text" id="usernameOrEmail" class="form-input" required placeholder="Enter username or email">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="password">Password</label>
+                    <input type="password" id="password" class="form-input" required placeholder="••••••••">
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-block" style="background-color: var(--accent-primary); color: #000;">Log In</button>
+            </form>
+            
+            <div class="auth-footer">
+                Don't have an account? <a href="signup.html" class="auth-link">Sign Up</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('usernameOrEmail').value;
+            // Mock Login Process
+            const user = { username: username, email: username + "@example.com" };
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            // Redirect to home page where photo icon will now appear
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

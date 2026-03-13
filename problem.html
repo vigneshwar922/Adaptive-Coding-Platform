@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem - Random</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="ide-body">
+    <nav class="navbar top-nav">
+        <div class="nav-container" style="max-width: 100%;">
+            <div class="nav-left">
+                <a href="index.html" class="logo">Random</a>
+                <span class="ide-problem-title" id="ide-title">Loading...</span>
+            </div>
+            <div class="nav-right" id="auth-section"></div>
+        </div>
+    </nav>
+
+    <main class="ide-container">
+        <!-- Left Pane -->
+        <div class="ide-pane left-pane">
+            <div class="ide-tabs">
+                <button class="ide-tab active" data-target="description">Description</button>
+                <button class="ide-tab" data-target="submissions">Submissions</button>
+            </div>
+            
+            <div class="ide-content-area" id="description-content">
+                <h1 class="problem-heading" id="problem-name">Problem Title</h1>
+                <div class="problem-meta">
+                    <span class="diff-badge" id="problem-diff">Easy</span>
+                </div>
+                
+                <div class="problem-body">
+                    <p>Given an array of integers <code>nums</code> and an integer <code>target</code>, return <em>indices of the two numbers such that they add up to <code>target</code></em>.</p>
+                    <p>You may assume that each input would have <strong><em>exactly</em> one solution</strong>, and you may not use the <em>same</em> element twice.</p>
+                    <p>You can return the answer in any order.</p>
+
+                    <h3>Example 1:</h3>
+                    <pre class="test-case"><code>Input: nums = [2,7,11,15], target = 9
+Output: [0,1]
+Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].</code></pre>
+
+                    <h3>Example 2:</h3>
+                    <pre class="test-case"><code>Input: nums = [3,2,4], target = 6
+Output: [1,2]</code></pre>
+
+                </div>
+            </div>
+
+            <div class="ide-content-area hidden" id="submissions-content">
+                <div class="submission-stats">
+                    <p>You have submitted this problem <strong id="sub-count">3</strong> times.</p>
+                </div>
+                <table class="submissions-table">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Language</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="submissions-list">
+                        <tr>
+                            <td style="color: var(--success); font-weight: bold;">Accepted</td>
+                            <td>Java</td>
+                            <td>Just now</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--danger); font-weight: bold;">Wrong Answer</td>
+                            <td>Java</td>
+                            <td>10 minutes ago</td>
+                        </tr>
+                        <tr>
+                            <td style="color: var(--danger); font-weight: bold;">Time Limit Exceeded</td>
+                            <td>Python</td>
+                            <td>2 days ago</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="resizer" id="resizer"></div>
+
+        <!-- Right Pane -->
+        <div class="ide-pane right-pane">
+            <div class="editor-section">
+                <div class="editor-header">
+                    <select class="lang-select" id="lang-select">
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                    <button class="btn btn-secondary btn-sm" id="reset-btn">Reset Code</button>
+                </div>
+                <div class="editor-body">
+                    <textarea class="code-editor" id="code-editor" spellcheck="false" placeholder="Write your code here..."></textarea>
+                </div>
+            </div>
+
+            <!-- Console Section -->
+            <div class="console-section">
+                <div class="console-header" id="console-toggle">
+                    <span style="font-weight: 500;">Console</span>
+                    <span class="chevron">▲</span>
+                </div>
+                <div class="console-body hidden" id="console-body">
+                    <div id="console-output">Select Run or Submit to see output here.</div>
+                </div>
+                <div class="console-actions">
+                    <button class="btn btn-secondary" id="run-btn">Run</button>
+                    <button class="btn btn-primary" id="submit-btn" style="background-color: var(--success); color: white; border-color: var(--success);">Submit</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Boilerplate code mapping
+            const boilerplate = {
+                java: "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write code here\n    }\n}",
+                python: "class Solution:\n    def twoSum(self, nums: List[int], target: int) -> List[int]:\n        # Write code here\n        pass",
+                javascript: "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nvar twoSum = function(nums, target) {\n    // Write code here\n};"
+            };
+
+            const editor = document.getElementById('code-editor');
+            const langSelect = document.getElementById('lang-select');
+            
+            // Set initial code
+            editor.value = boilerplate[langSelect.value];
+            
+            langSelect.addEventListener('change', (e) => {
+                editor.value = boilerplate[e.target.value];
+            });
+
+            document.getElementById('reset-btn').addEventListener('click', () => {
+                editor.value = boilerplate[langSelect.value];
+            });
+
+            // Tabs Logic
+            const tabs = document.querySelectorAll('.ide-tab');
+            const contents = {
+                description: document.getElementById('description-content'),
+                submissions: document.getElementById('submissions-content')
+            };
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // Remove active from all
+                    tabs.forEach(t => t.classList.remove('active'));
+                    Object.values(contents).forEach(c => c.classList.add('hidden'));
+
+                    // Add active to clicked
+                    tab.classList.add('active');
+                    contents[tab.dataset.target].classList.remove('hidden');
+                });
+            });
+
+            // Console Logic
+            const consoleToggle = document.getElementById('console-toggle');
+            const consoleBody = document.getElementById('console-body');
+            const consoleOutput = document.getElementById('console-output');
+
+            consoleToggle.addEventListener('click', () => {
+                consoleBody.classList.toggle('hidden');
+            });
+
+            document.getElementById('run-btn').addEventListener('click', () => {
+                consoleBody.classList.remove('hidden');
+                consoleOutput.innerHTML = '<span style="color:var(--text-secondary)">Compiling...</span>';
+                setTimeout(() => {
+                    consoleOutput.innerHTML = `
+                        <strong style="color:var(--success)">Finished</strong><br>
+                        <br>Your input: [2, 7, 11, 15]<br>
+                        Output: [0, 1]<br>
+                        Expected: [0, 1]
+                    `;
+                }, 800);
+            });
+
+            document.getElementById('submit-btn').addEventListener('click', () => {
+                consoleBody.classList.remove('hidden');
+                consoleOutput.innerHTML = '<span style="color:var(--text-secondary)">Judging Wait...</span>';
+                setTimeout(() => {
+                    consoleOutput.innerHTML = `
+                        <h3 style="color:var(--success); margin-bottom: 8px;">Accepted</h3>
+                        <p>Runtime: 1 ms, faster than 99.12%</p>
+                        <p>Memory Usage: 42.1 MB, less than 65.4%</p>
+                    `;
+
+                    // Update submissions tab automatically mock
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td style="color: var(--success); font-weight: bold;">Accepted</td>
+                        <td>${langSelect.options[langSelect.selectedIndex].text}</td>
+                        <td>Just now</td>
+                    `;
+                    document.getElementById('submissions-list').prepend(tr);
+                    const countEl = document.getElementById('sub-count');
+                    countEl.textContent = parseInt(countEl.textContent) + 1;
+                }, 1200);
+            });
+
+            // Set Title from URL param for mock effect
+            const urlParams = new URLSearchParams(window.location.search);
+            const probId = urlParams.get('id') || 1;
+            const prob = window.appData.problems.find(p => p.id == probId);
+            if(prob) {
+                document.getElementById('ide-title').textContent = `${prob.id}. ${prob.title}`;
+                document.getElementById('problem-name').textContent = `${prob.id}. ${prob.title}`;
+                const badge = document.getElementById('problem-diff');
+                badge.textContent = prob.difficulty;
+                let color = 'var(--difficulty-easy)';
+                if(prob.difficulty==='Medium') color = 'var(--difficulty-medium)';
+                if(prob.difficulty==='Hard') color = 'var(--difficulty-hard)';
+                badge.style.color = color;
+                badge.style.backgroundColor = color.replace(')', ', 0.1)').replace('rgb', 'rgba').replace('hsl', 'hsla'); // Simplified mock
+            }
+        });
+    </script>
+</body>
+</html>

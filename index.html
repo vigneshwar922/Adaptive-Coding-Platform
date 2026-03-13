@@ -1,217 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AlgoSolve</title>
+    <title>Random - LeetCode Clone</title>
+    <meta name="description" content="A premium platform to practice coding problems, take courses, and participate in contests.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-
 <body>
-    <div class="app-container">
-        <!-- Persistent Navigation Bar -->
-        <nav class="navbar">
+    <!-- Top Navigation Bar -->
+    <nav class="navbar top-nav">
+        <div class="nav-container">
             <div class="nav-left">
-                <div class="logo cursor-pointer" onclick="app.navigate('home')">
-                    <i class="fa-solid fa-code"></i> AlgoSolve
-                </div>
-                <div class="nav-links">
-                    <a href="#" class="active" onclick="app.navigate('home')">Problems</a>
-                    <a href="#" onclick="app.navigate('home')">Topics</a>
-                </div>
+                <a href="index.html" class="logo">Random</a>
             </div>
-
-            <!-- Auth / Profile Area (Dynamically Rendered) -->
-            <div class="nav-right" id="nav-profile-area">
-                <!-- Rendered by app.js depending on auth state -->
-            </div>
-        </nav>
-
-        <!-- Dynamic View Container -->
-        <main id="app-content" class="main-content">
-            <!-- Views are injected here by app.js -->
-        </main>
-    </div>
-
-    <!-- View Templates (Hidden from DOM until injected) -->
-
-    <!-- 1. Home / Problems List View -->
-    <template id="view-home">
-        <div class="problems-container scrollable">
-            <div class="hero-section">
-                <h1>Welcome to AlgoSolve</h1>
-                <p>Master your coding skills through carefully curated problem sets.</p>
-            </div>
-
-            <div class="topics-grid" id="topics-grid">
-                <!-- Injected via JS -->
-            </div>
-
-            <div class="problems-list-section">
-                <div class="list-header">
-                    <h2>All Problems</h2>
-                    <div class="filters">
-                        <select class="super-select" id="difficulty-filter">
-                            <option value="all">All Difficulties</option>
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <table class="problems-table">
-                        <thead>
-                            <tr>
-                                <th>Status</th>
-                                <th>Title</th>
-                                <th>Topic</th>
-                                <th>Difficulty</th>
-                            </tr>
-                        </thead>
-                        <tbody id="problems-tbody">
-                            <!-- Injected via JS -->
-                        </tbody>
-                    </table>
-                </div>
+            <div class="nav-right" id="auth-section">
+                <!-- Injected via JS based on Auth state -->
             </div>
         </div>
-    </template>
+    </nav>
 
-    <!-- 2. Authentication View (Login/Register Combined) -->
-    <template id="view-auth">
-        <div class="auth-wrapper">
-            <div class="bg-shape shape-1"></div>
-            <div class="bg-shape shape-2"></div>
-
-            <div class="auth-card">
-                <!-- Tabs for Login / Sign Up -->
-                <div class="auth-tabs">
-                    <button class="auth-tab active" id="tab-login" onclick="app.switchAuthTab('login')">Login</button>
-                    <button class="auth-tab" id="tab-signup" onclick="app.switchAuthTab('signup')">Sign Up</button>
-                </div>
-
-                <!-- Login Form -->
-                <form id="form-login" class="auth-form active-form" onsubmit="app.handleLogin(event)">
-                    <div class="form-header">
-                        <h2>Welcome back</h2>
-                        <p>Enter your details to access your account.</p>
-                    </div>
-                    <div class="input-group">
-                        <label for="login-username">Username</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-user"></i>
-                            <input type="text" id="login-username" placeholder="johndoe123" required>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label for="login-password">Password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="login-password" placeholder="••••••••" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit">Sign In</button>
-                </form>
-
-                <!-- Sign Up Form -->
-                <form id="form-signup" class="auth-form" onsubmit="app.handleSignup(event)">
-                    <div class="form-header">
-                        <h2>Create an account</h2>
-                        <p>Join the community of developers today.</p>
-                    </div>
-                    <div class="input-group">
-                        <label for="signup-username">Username</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-user"></i>
-                            <input type="text" id="signup-username" placeholder="johndoe123" required>
-                        </div>
-                    </div>
-                    <div class="input-group">
-                        <label for="signup-password">Password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock"></i>
-                            <input type="password" id="signup-password" placeholder="Create a password" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn-submit">Sign Up</button>
-                </form>
-            </div>
+    <!-- Secondary Navigation Bar -->
+    <nav class="navbar bottom-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="problems.html" class="nav-link">Problems</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contests.html" class="nav-link">Contests</a></li>
+            </ul>
         </div>
-    </template>
+    </nav>
 
-    <!-- 3. Workspace / Editor View -->
-    <template id="view-workspace">
-        <div class="workspace">
-            <!-- Left Panel: Problem Description -->
-            <div class="panel left-panel">
-                <div class="panel-header">
-                    <div class="tabs">
-                        <button class="tab active"><i class="fa-regular fa-file-lines"></i> Description</button>
-                    </div>
-                </div>
-
-                <div class="panel-content scrollable" id="workspace-problem-details">
-                    <!-- Injected via JS -->
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">A New Way to Learn</h1>
+                <p class="hero-subtitle">Master your skills. Crack the interview. Get the job.</p>
+                <div class="hero-actions">
+                    <a href="signup.html" class="btn btn-primary" id="hero-cta">Create Account</a>
+                    <a href="problems.html" class="btn btn-secondary">Explore Problems</a>
                 </div>
             </div>
+        </section>
 
-            <!-- Right Panel: Editor & Console -->
-            <div class="right-area">
-                <!-- Editor Panel -->
-                <div class="panel editor-panel">
-                    <div class="panel-header editor-toolbar">
-                        <div class="lang-selector">
-                            <select id="language" class="super-select" onchange="app.changeLanguage(this.value)">
-                                <option value="javascript">JavaScript</option>
-                                <option value="python">Python 3</option>
-                            </select>
-                        </div>
-                        <div class="editor-actions">
-                            <button class="icon-btn" title="Format Code"><i class="fa-solid fa-align-left"></i></button>
-                            <button class="icon-btn" title="Reset to Default"><i
-                                    class="fa-solid fa-rotate-right"></i></button>
-                        </div>
-                    </div>
-                    <div id="monaco-container" class="monaco-container"></div>
-                </div>
+        <!-- Feature cards or other landing page items can go here -->
+    </main>
 
-                <!-- Console Panel -->
-                <div class="panel console-panel">
-                    <div class="panel-header console-header">
-                        <div class="tabs">
-                            <button class="tab active"><i class="fa-solid fa-terminal"></i> Console Output</button>
-                        </div>
-                    </div>
-                    <div class="console-content" id="console-output">
-                        <p class="text-muted">Run or submit code to see results here.</p>
-                    </div>
-
-                    <div class="action-footer">
-                        <div class="left-actions">
-                            <button class="btn btn-secondary" onclick="app.navigate('home')"><i
-                                    class="fa-solid fa-arrow-left"></i> Back to Problems</button>
-                        </div>
-                        <div class="right-actions">
-                            <button class="btn btn-secondary" onclick="app.runCode()">Run</button>
-                            <button class="btn btn-primary" onclick="app.submitCode()">Submit</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </template>
-
-    <!-- Scripts -->
-    <!-- SweetAlert for nice toast notifications instead of ugly browser alerts -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.38.0/min/vs/loader.min.js"></script>
+    <script src="data.js"></script>
     <script src="app.js"></script>
 </body>
-
 </html>

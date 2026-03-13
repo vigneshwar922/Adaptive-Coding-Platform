@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses - Random</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">Random</a>
+            </div>
+            <div class="nav-right" id="auth-section"></div>
+        </div>
+    </nav>
+    <nav class="navbar bottom-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="problems.html" class="nav-link">Problems</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contests.html" class="nav-link">Contests</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-container">
+            <h1 class="page-title">Explore Courses</h1>
+            <p class="text-secondary" style="margin-bottom: 32px;">Master algorithmic patterns and data structures step by step.</p>
+            
+            <div class="courses-grid" id="courses-grid">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const coursesGrid = document.getElementById('courses-grid');
+            
+            window.appData.courses.forEach(course => {
+                const card = document.createElement('div');
+                card.className = 'course-card';
+                card.innerHTML = `
+                    <div class="course-header">
+                        <span class="course-level ${course.level.toLowerCase()}">${course.level}</span>
+                    </div>
+                    <div class="course-body">
+                        <h3 class="course-title">${course.title}</h3>
+                        <p class="course-desc text-secondary">${course.description}</p>
+                    </div>
+                    <div class="course-footer">
+                        <button class="btn btn-primary" style="width: 100%;">Start Course</button>
+                    </div>
+                `;
+                coursesGrid.appendChild(card);
+            });
+        });
+    </script>
+</body>
+</html>

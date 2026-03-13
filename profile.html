@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Random</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">Random</a>
+            </div>
+            <div class="nav-right" id="auth-section">
+                <!-- Auto populated -->
+            </div>
+        </div>
+    </nav>
+    <nav class="navbar bottom-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="problems.html" class="nav-link">Problems</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contests.html" class="nav-link">Contests</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="profile-container">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar-large" id="profile-avatar">U</div>
+                    <div>
+                        <h1 class="profile-name" id="profile-username">User Name</h1>
+                        <p class="text-secondary" id="profile-email">user@example.com</p>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" id="logout-btn">Log Out</button>
+            </div>
+
+            <div class="stats-section">
+                <h2 class="section-title">Solved Problems</h2>
+                <div class="stats-grid">
+                    <!-- Overall Stats -->
+                    <div class="stat-card">
+                        <div class="stat-title">Total Solved</div>
+                        <div class="stat-value">124 <span class="stat-total">/ 3245</span></div>
+                    </div>
+                </div>
+                
+                <h3 class="section-subtitle">By Difficulty</h3>
+                <div class="difficulty-grid">
+                    <div class="difficulty-card easy">
+                        <div class="diff-header">
+                            <span class="diff-label">Easy</span>
+                            <span class="diff-count">82 <span class="diff-total">/ 814</span></span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill easy" style="width: 10%;"></div></div>
+                    </div>
+                    
+                    <div class="difficulty-card medium">
+                        <div class="diff-header">
+                            <span class="diff-label">Medium</span>
+                            <span class="diff-count">35 <span class="diff-total">/ 1709</span></span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill medium" style="width: 2%;"></div></div>
+                    </div>
+                    
+                    <div class="difficulty-card hard">
+                        <div class="diff-header">
+                            <span class="diff-label">Hard</span>
+                            <span class="diff-count">7 <span class="diff-total">/ 722</span></span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill hard" style="width: 1%;"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = JSON.parse(localStorage.getItem('currentUser'));
+            if (!user) {
+                // Not logged in, redirect
+                window.location.href = 'login.html';
+                return;
+            }
+
+            document.getElementById('profile-username').textContent = user.username;
+            document.getElementById('profile-email').textContent = user.email;
+            document.getElementById('profile-avatar').textContent = user.username.charAt(0).toUpperCase();
+
+            document.getElementById('logout-btn').addEventListener('click', () => {
+                localStorage.removeItem('currentUser');
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+</body>
+</html>

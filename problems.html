@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problems - Random</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <a href="index.html" class="logo">Random</a>
+            </div>
+            <div class="nav-right" id="auth-section"></div>
+        </div>
+    </nav>
+    <nav class="navbar bottom-nav">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="problems.html" class="nav-link">Problems</a></li>
+                <li><a href="courses.html" class="nav-link">Courses</a></li>
+                <li><a href="contests.html" class="nav-link">Contests</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <div class="page-container">
+            <div class="problems-layout">
+                <!-- Left Section: Problems List -->
+                <div class="problems-main">
+                    <div class="search-bar-container">
+                        <input type="text" id="problem-search" class="search-input" placeholder="Search problems...">
+                    </div>
+                    
+                    <div class="table-container">
+                        <table class="problems-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px">Status</th>
+                                    <th>Title</th>
+                                    <th style="width: 150px">Acceptance</th>
+                                    <th style="width: 100px">Difficulty</th>
+                                </tr>
+                            </thead>
+                            <tbody id="problems-tbody">
+                                <!-- Populated via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Section: Topics -->
+                <div class="problems-sidebar">
+                    <h3 class="sidebar-title">Topics</h3>
+                    <div class="topics-list" id="topics-list">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const tbody = document.getElementById('problems-tbody');
+            const topicsList = document.getElementById('topics-list');
+
+            // Render Topics
+            window.appData.topics.forEach(topic => {
+                const badge = document.createElement('div');
+                badge.className = 'topic-badge';
+                badge.innerHTML = `<span>${topic.name}</span> <span class="badge-count">${topic.count}</span>`;
+                topicsList.appendChild(badge);
+            });
+
+            // Render Problems
+            function renderProblems(problems) {
+                tbody.innerHTML = '';
+                problems.forEach(prob => {
+                    const tr = document.createElement('tr');
+                    
+                    // Simple logic for colors
+                    let diffColor = 'var(--difficulty-easy)';
+                    if(prob.difficulty === 'Medium') diffColor = 'var(--difficulty-medium)';
+                    if(prob.difficulty === 'Hard') diffColor = 'var(--difficulty-hard)';
+
+                    // Logic for status
+                    let statusIcon = '<div class="status-circle"></div>'; // Empty for todo
+                    if(prob.status === 'Solved') {
+                        statusIcon = '<div class="status-circle solved"></div>'; // Solved green
+                    } else if(prob.status === 'Attempted') {
+                        statusIcon = '<div class="status-circle attempted"></div>'; // Attempted orange
+                    }
+
+                    tr.innerHTML = `
+                        <td>${statusIcon}</td>
+                        <td><a href="problem.html?id=${prob.id}" class="problem-link">${prob.id}. ${prob.title}</a></td>
+                        <td>${prob.acceptance}</td>
+                        <td style="color: ${diffColor}; font-weight: 500;">${prob.difficulty}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            renderProblems(window.appData.problems);
+
+            // Search functionality
+            document.getElementById('problem-search').addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase();
+                const filtered = window.appData.problems.filter(p => 
+                    p.title.toLowerCase().includes(term) || p.id.toString().includes(term)
+                );
+                renderProblems(filtered);
+            });
+        });
+    </script>
+</body>
+</html>
