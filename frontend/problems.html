@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSA Platform — Problems</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav>
+    <a href="problems.html" class="logo">DSA Platform</a>
+    <div class="nav-links">
+      <a href="dashboard.html">Dashboard</a>
+      <a href="#" onclick="logout()">Logout</a>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <h1 class="page-title" style="margin-bottom:0">Problems</h1>
+      <span id="welcome-msg" style="color:#a0a0b0; font-size:14px;"></span>
+    </div>
+
+    <div class="filters">
+      <select id="filter-topic" onchange="loadProblems()">
+        <option value="">All Topics</option>
+        <option value="arrays">Arrays</option>
+        <option value="strings">Strings</option>
+        <option value="stacks">Stacks</option>
+        <option value="dp">Dynamic Programming</option>
+        <option value="trees">Trees</option>
+        <option value="graphs">Graphs</option>
+        <option value="sorting">Sorting</option>
+      </select>
+
+      <select id="filter-difficulty" onchange="loadProblems()">
+        <option value="">All Difficulties</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
+
+    <div id="problems-container">
+      <div class="loading">Loading problems...</div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/problems.js"></script>
+
+</body>
+</html>

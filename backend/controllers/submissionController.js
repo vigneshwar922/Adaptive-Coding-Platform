@@ -1,5 +1,23 @@
 const pool = require('../config/db');
-const { runCode } = require('../services/judge0');
+const { runCode: executeCode } = require('../services/judge0');
+
+exports.runCode = async (req, res) => {
+  const { language, code, input } = req.body;
+
+  try {
+    const result = await executeCode(code, language, input);
+    res.json({
+      stdout: result.stdout,
+      stderr: result.stderr,
+      compile_output: result.compile_output,
+      status: result.statusDescription,
+      time: result.time
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Run failed', error: err.message });
+  }
+};
 
 exports.submitCode = async (req, res) => {
   const { problem_id, language, code } = req.body;
@@ -21,7 +39,7 @@ exports.submitCode = async (req, res) => {
     let errorDetail = '';
 
     for (const tc of testCases.rows) {
-      const result = await runCode(code, language, tc.input);
+      const result = await executeCode(code, language, tc.input);
 
       if (result.stderr || result.compile_output) {
         allPassed = false;
@@ -83,7 +101,7 @@ exports.getUserSubmissions = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT s.id, p.title, s.language, s.status,
-       s.execution_time, s.submitted_at
+       s.execution_time, s.submitted_at, s.problem_id
        FROM submissions s
        JOIN problems p ON s.problem_id = p.id
        WHERE s.user_id = $1
