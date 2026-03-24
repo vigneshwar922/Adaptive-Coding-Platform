@@ -166,7 +166,7 @@ async function runCode() {
     for (let i = 0; i < currentExamples.length; i++) {
       const ex = currentExamples[i];
 
-      const res = await fetch('http://localhost:5000/api/submissions/run', {
+      const res = await fetch('https://adaptive-coding-platform.onrender.com/api/submissions/run', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
