@@ -95,7 +95,23 @@
       </div>
     </div>
   </div>
+  <!-- ADD THIS RIGHT BEFORE YOUR SCRIPTS IN problem.html -->
+  <div id="submission-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h2 id="modal-status" style="margin-bottom: 10px; text-transform: capitalize;"></h2>
+      
+      <div style="display: flex; gap: 20px; color: #a0a0b0; font-size: 14px; margin-bottom: 20px;">
+        <span>Language: <strong id="modal-lang" style="color: #e0e0e0; text-transform: capitalize;"></strong></span>
+        <span>Runtime: <strong id="modal-time" style="color: #e0e0e0;"></strong></span>
+        <span>Submitted: <strong id="modal-date" style="color: #e0e0e0;"></strong></span>
+      </div>
 
+      <div class="code-block-container">
+        <pre><code id="modal-code"></code></pre>
+      </div>
+    </div>
+  </div>
   <!-- Monaco Editor CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
   <script src="js/api.js"></script>

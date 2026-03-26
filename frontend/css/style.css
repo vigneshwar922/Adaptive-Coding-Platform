@@ -482,3 +482,53 @@ nav {
     color: #ffffff;
     text-decoration: underline;
 }
+/* --- SUBMISSION MODAL STYLES --- */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; 
+  z-index: 1000; 
+  left: 0; top: 0;
+  width: 100%; height: 100%; 
+  background-color: rgba(0, 0, 0, 0.7); 
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background-color: #1a1a2e;
+  margin: 5% auto; 
+  padding: 24px 30px;
+  border: 1px solid #2d2d44;
+  border-radius: 12px;
+  width: 80%;
+  max-width: 800px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+}
+
+.close-btn {
+  color: #a0a0b0;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.close-btn:hover { color: #ffffff; }
+
+.code-block-container {
+  background: #0f0f23;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #2d2d44;
+  overflow-x: auto;
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.code-block-container pre {
+  margin: 0;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 15px;
+  color: #e0e0e0;
+  line-height: 1.5;
+}
