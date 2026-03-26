@@ -3,6 +3,7 @@ requireAuth();
 let editor;
 let currentProblemId;
 let currentExamples = [];
+let currentProblemLabels = []; // labels for each input line (e.g. ['nums', 'target'])
 
 const defaultCode = {
   python: '# Write your solution here\n\n',
@@ -82,20 +83,42 @@ async function loadProblem() {
 
     document.getElementById('problem-topic').textContent = problem.topic;
 
-    // store examples for run button
+    // store examples and input labels for run button
     currentExamples = problem.examples || [];
+    currentProblemLabels = problem.input_labels
+      ? problem.input_labels.split(',').map(l => l.trim())
+      : [];
 
     // show examples
     const examplesDiv = document.getElementById('problem-examples');
     if (currentExamples.length > 0) {
       currentExamples.forEach((ex, i) => {
+        // Split multi-line input into individual labeled variables
+        const inputLines = ex.input.replace(/\\n/g, '\n').split('\n').filter(l => l.trim() !== '');
+        const inputLabels = currentProblemLabels.length > 0 ? currentProblemLabels : null;
+
+        let inputHTML = '';
+        inputLines.forEach((line, idx) => {
+          const label = (inputLabels && inputLabels[idx]) ? inputLabels[idx] : `input${inputLines.length > 1 ? (idx + 1) : ''}`;
+          inputHTML += `
+            <div style="margin-bottom:4px;">
+              <span style="color:#6366f1; font-family:monospace;">${label}</span>
+              <span style="color:#a0a0b0; font-family:monospace;"> = </span>
+              <span style="color:#e0e0e0; font-family:monospace;">${line.trim()}</span>
+            </div>`;
+        });
+
         examplesDiv.innerHTML += `
-          <div class="example-box" style="margin-bottom:10px;">
-            <strong style="color:#a0a0b0;">Example ${i + 1}</strong><br><br>
-            <strong style="color:#6366f1;">Input:</strong>
-            <span style="font-family:monospace;">${ex.input.replace(/\\n/g, ' | ')}</span><br>
-            <strong style="color:#22c55e;">Expected Output:</strong>
-            <span style="font-family:monospace;">${ex.expected_output}</span>
+          <div class="example-box" style="margin-bottom:12px; padding:14px; background:#0f0f23; border-radius:8px; border-left:3px solid #6366f1;">
+            <strong style="color:#a0a0b0; font-size:12px; text-transform:uppercase; letter-spacing:1px;">Example ${i + 1}</strong>
+            <div style="margin-top:10px; margin-bottom:8px;">
+              <div style="color:#a0a0b0; font-size:12px; text-transform:uppercase; margin-bottom:6px;">Input</div>
+              ${inputHTML}
+            </div>
+            <div>
+              <div style="color:#a0a0b0; font-size:12px; text-transform:uppercase; margin-bottom:6px;">Output</div>
+              <span style="color:#22c55e; font-family:monospace;">${ex.expected_output}</span>
+            </div>
           </div>
         `;
       });
@@ -192,8 +215,12 @@ async function runCode() {
             </span>
           </div>
           <div style="font-family:monospace; font-size:13px; margin-bottom:4px;">
-            <span style="color:#6366f1;">Input: </span>
-            <span style="color:#e0e0e0;">${ex.input.replace(/\\n/g, ' | ')}</span>
+            <span style="color:#6366f1;">Input:</span>
+            ${ex.input.replace(/\\n/g, '\n').split('\n').filter(l => l.trim()).map((line, idx) => {
+              const labels = currentProblemLabels || [];
+              const label = labels[idx] || (idx === 0 ? 'nums' : idx === 1 ? 'target' : `var${idx + 1}`);
+              return `<div style="padding-left:12px; color:#e0e0e0;"><span style="color:#a0a0b0;">${label} = </span>${line.trim()}</div>`;
+            }).join('')}
           </div>
           <div style="font-family:monospace; font-size:13px; margin-bottom:4px;">
             <span style="color:#22c55e;">Expected: </span>

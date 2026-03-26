@@ -29,6 +29,7 @@ exports.getProblemById = async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT p.id, p.title, p.description, p.difficulty, p.topic,
+       p.input_labels,
        json_agg(
          json_build_object('input', tc.input, 'expected_output', tc.expected_output)
        ) FILTER (WHERE tc.is_hidden = false) AS examples
