@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive-Coding-Platform — Problems</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Dynamic content from api.js -->
+    </div>
+  </nav>
+
+  <div class="container container-wide">
+    <div class="problems-layout">
+      <!-- Left side: Problems -->
+      <div class="problems-main">
+        <div class="section-header">
+          <h1 class="page-title">Problems</h1>
+          <div class="search-bar">
+            <input type="text" id="problem-search" placeholder="Search problems..." oninput="loadProblems()">
+          </div>
+        </div>
+
+        <div id="problems-container">
+          <!-- Problems table will be injected here -->
+        </div>
+      </div>
+
+      <!-- Right side: Topics -->
+      <div class="topics-sidebar">
+        <h3>Topics</h3>
+        <div class="topic-list" id="topic-list">
+          <div class="topic-item active" onclick="filterByTopic('')">All Topics</div>
+          <div class="topic-item" onclick="filterByTopic('arrays')">Arrays</div>
+          <div class="topic-item" onclick="filterByTopic('strings')">Strings</div>
+          <div class="topic-item" onclick="filterByTopic('dp')">Dynamic Programming</div>
+          <div class="topic-item" onclick="filterByTopic('trees')">Trees</div>
+          <div class="topic-item" onclick="filterByTopic('graphs')">Graphs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <p class="dev-title">Developed by</p>
+    <div class="team-names">
+      <a href="#">Akula Vaishnavi</a>
+      <a href="#">Katteboina ShashiNandini</a>
+      <a href="#">Pokala Vigneshwar</a>
+    </div>
+  </footer>
+  <script src="js/api.js"></script>
+  <script src="js/problems.js"></script>
+
+</body>
+</html>
