@@ -13,31 +13,27 @@
       margin-top: 32px;
     }
     .course-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
+      background: var(--surface, #ffffff);
+      border: 1px solid var(--border, #e2e8f0);
       border-radius: 16px;
       padding: 28px;
-      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
-      transition: transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 6px -1px var(--card-shadow, rgba(0,0,0,0.05));
+      transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s;
       cursor: pointer;
     }
     .course-card:hover {
       transform: translateY(-3px);
       box-shadow: 0 10px 20px -4px rgba(0,0,0,0.1);
     }
-    .course-icon {
-      font-size: 36px;
-      margin-bottom: 16px;
-    }
     .course-title {
       font-size: 18px;
       font-weight: 700;
-      color: #1e293b;
+      color: var(--text, #1e293b);
       margin-bottom: 8px;
     }
     .course-desc {
       font-size: 14px;
-      color: #64748b;
+      color: var(--text-muted, #64748b);
       line-height: 1.6;
       margin-bottom: 16px;
     }
@@ -84,7 +80,6 @@
     <div class="courses-grid">
 
       <div class="course-card course-accent-1" onclick="alert('Course coming soon!')">
-        <div class="course-icon">📘</div>
         <div class="course-title">Arrays & Strings</div>
         <div class="course-desc">Master the fundamentals of arrays, strings, two-pointer, and sliding window techniques.</div>
         <div class="course-meta">
@@ -94,7 +89,6 @@
       </div>
 
       <div class="course-card course-accent-2" onclick="alert('Course coming soon!')">
-        <div class="course-icon">🌲</div>
         <div class="course-title">Trees & Graphs</div>
         <div class="course-desc">Learn traversals, BSTs, DFS/BFS, shortest path, and topological sort.</div>
         <div class="course-meta">
@@ -104,7 +98,6 @@
       </div>
 
       <div class="course-card course-accent-3" onclick="alert('Course coming soon!')">
-        <div class="course-icon">⚡</div>
         <div class="course-title">Dynamic Programming</div>
         <div class="course-desc">Break down complex problems using memoization, tabulation, and classic DP patterns.</div>
         <div class="course-meta">
@@ -114,7 +107,6 @@
       </div>
 
       <div class="course-card course-accent-4" onclick="alert('Course coming soon!')">
-        <div class="course-icon">🔗</div>
         <div class="course-title">Linked Lists</div>
         <div class="course-desc">Understand singly/doubly linked lists, reversals, cycle detection and merge operations.</div>
         <div class="course-meta">
@@ -124,7 +116,6 @@
       </div>
 
       <div class="course-card course-accent-5" onclick="alert('Course coming soon!')">
-        <div class="course-icon">📚</div>
         <div class="course-title">Stacks & Queues</div>
         <div class="course-desc">Explore stack/queue patterns including monotonic stacks and priority queues.</div>
         <div class="course-meta">
@@ -134,7 +125,6 @@
       </div>
 
       <div class="course-card course-accent-6" onclick="alert('Course coming soon!')">
-        <div class="course-icon">🧮</div>
         <div class="course-title">Sorting & Searching</div>
         <div class="course-desc">From quicksort to binary search — build intuition for sorting algorithms and search strategies.</div>
         <div class="course-meta">

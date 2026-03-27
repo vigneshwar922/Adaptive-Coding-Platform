@@ -51,6 +51,21 @@ function renderNavbar() {
   const isCourses = currentPath.includes('courses.html');
   const isWishlist = currentPath.includes('wishlist.html');
 
+  // Inject center nav links beside the logo
+  let navCenter = document.getElementById('nav-center');
+  if (!navCenter) {
+    navCenter = document.createElement('div');
+    navCenter.id = 'nav-center';
+    navCenter.className = 'nav-center';
+    const logo = document.querySelector('.main-nav .logo, nav .logo');
+    if (logo) logo.after(navCenter);
+  }
+  navCenter.innerHTML = `
+    <a href="problems.html" class="nav-center-link ${isProblems ? 'active' : ''}">Problems</a>
+    <a href="courses.html" class="nav-center-link ${isCourses ? 'active' : ''}">Courses</a>
+    <a href="wishlist.html" class="nav-center-link ${isWishlist ? 'active' : ''}">Wishlist</a>
+  `;
+
   if (isLoggedIn()) {
     const user = getUser();
     navActions.innerHTML = `
@@ -68,23 +83,9 @@ function renderNavbar() {
     `;
   }
 
-  // Add secondary navbar always (persistent navigation)
-  let secondaryNav = document.getElementById('secondary-nav');
-  if (!secondaryNav) {
-    secondaryNav = document.createElement('div');
-    secondaryNav.id = 'secondary-nav';
-    secondaryNav.className = 'secondary-nav';
-    const mainNav = document.querySelector('.main-nav') || document.querySelector('nav');
-    if (mainNav) mainNav.after(secondaryNav);
-  }
-  
-  secondaryNav.innerHTML = `
-    <div class="container secondary-nav-container">
-      <a href="problems.html" class="${isProblems ? 'active' : ''}">Problems</a>
-      <a href="courses.html" class="${isCourses ? 'active' : ''}">Courses</a>
-      <a href="wishlist.html" class="${isWishlist || currentPath.includes('wishlist') ? 'active' : ''}">Wishlist</a>
-    </div>
-  `;
+  // Remove old secondary nav if present
+  const secondaryNav = document.getElementById('secondary-nav');
+  if (secondaryNav) secondaryNav.remove();
 }
 
 function logout() {
