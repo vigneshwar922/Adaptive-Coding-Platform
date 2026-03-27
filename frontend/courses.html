@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Adaptive-Coding-Platform — Courses</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 32px;
+    }
+    .course-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .course-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px -4px rgba(0,0,0,0.1);
+    }
+    .course-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
+    .course-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 8px;
+    }
+    .course-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .course-meta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .course-tag {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    .tag-beginner { background: #dcfce7; color: #16a34a; }
+    .tag-intermediate { background: #fef3c7; color: #d97706; }
+    .tag-advanced { background: #fee2e2; color: #dc2626; }
+    .course-lessons { font-size: 12px; color: #94a3b8; }
+    .course-accent-1 { border-top: 4px solid #6366f1; }
+    .course-accent-2 { border-top: 4px solid #22c55e; }
+    .course-accent-3 { border-top: 4px solid #f59e0b; }
+    .course-accent-4 { border-top: 4px solid #ef4444; }
+    .course-accent-5 { border-top: 4px solid #8b5cf6; }
+    .course-accent-6 { border-top: 4px solid #06b6d4; }
+  </style>
+</head>
+<body>
+
+  <nav class="main-nav">
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Shared navbar logic from api.js -->
+    </div>
+  </nav>
+
+  <div class="container">
+    <div style="margin-bottom: 32px; margin-top: 16px;">
+      <h1 class="page-title">Courses</h1>
+      <p style="color:#64748b; font-size:15px; margin-top:6px;">Structured learning paths to master data structures and algorithms.</p>
+    </div>
+
+    <div class="courses-grid">
+
+      <div class="course-card course-accent-1" onclick="alert('Course coming soon!')">
+        <div class="course-icon">📘</div>
+        <div class="course-title">Arrays & Strings</div>
+        <div class="course-desc">Master the fundamentals of arrays, strings, two-pointer, and sliding window techniques.</div>
+        <div class="course-meta">
+          <span class="course-tag tag-beginner">Beginner</span>
+          <span class="course-lessons">12 lessons</span>
+        </div>
+      </div>
+
+      <div class="course-card course-accent-2" onclick="alert('Course coming soon!')">
+        <div class="course-icon">🌲</div>
+        <div class="course-title">Trees & Graphs</div>
+        <div class="course-desc">Learn traversals, BSTs, DFS/BFS, shortest path, and topological sort.</div>
+        <div class="course-meta">
+          <span class="course-tag tag-intermediate">Intermediate</span>
+          <span class="course-lessons">18 lessons</span>
+        </div>
+      </div>
+
+      <div class="course-card course-accent-3" onclick="alert('Course coming soon!')">
+        <div class="course-icon">⚡</div>
+        <div class="course-title">Dynamic Programming</div>
+        <div class="course-desc">Break down complex problems using memoization, tabulation, and classic DP patterns.</div>
+        <div class="course-meta">
+          <span class="course-tag tag-advanced">Advanced</span>
+          <span class="course-lessons">20 lessons</span>
+        </div>
+      </div>
+
+      <div class="course-card course-accent-4" onclick="alert('Course coming soon!')">
+        <div class="course-icon">🔗</div>
+        <div class="course-title">Linked Lists</div>
+        <div class="course-desc">Understand singly/doubly linked lists, reversals, cycle detection and merge operations.</div>
+        <div class="course-meta">
+          <span class="course-tag tag-beginner">Beginner</span>
+          <span class="course-lessons">10 lessons</span>
+        </div>
+      </div>
+
+      <div class="course-card course-accent-5" onclick="alert('Course coming soon!')">
+        <div class="course-icon">📚</div>
+        <div class="course-title">Stacks & Queues</div>
+        <div class="course-desc">Explore stack/queue patterns including monotonic stacks and priority queues.</div>
+        <div class="course-meta">
+          <span class="course-tag tag-intermediate">Intermediate</span>
+          <span class="course-lessons">8 lessons</span>
+        </div>
+      </div>
+
+      <div class="course-card course-accent-6" onclick="alert('Course coming soon!')">
+        <div class="course-icon">🧮</div>
+        <div class="course-title">Sorting & Searching</div>
+        <div class="course-desc">From quicksort to binary search — build intuition for sorting algorithms and search strategies.</div>
+        <div class="course-meta">
+          <span class="course-tag tag-intermediate">Intermediate</span>
+          <span class="course-lessons">14 lessons</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <p class="dev-title">Developed by</p>
+    <div class="team-names">
+      <a href="#">Akula Vaishnavi</a>
+      <a href="#">Katteboina ShashiNandini</a>
+      <a href="#">Pokala Vigneshwar</a>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+</body>
+</html>

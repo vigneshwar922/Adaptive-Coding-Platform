@@ -189,6 +189,11 @@ async function submitCode() {
   const code = editor.getValue();
   const resultContent = document.getElementById('result-content');
 
+  if (!isLoggedIn()) {
+    window.location.href = 'index.html';
+    return;
+  }
+
   resultContent.innerHTML = 'Submitting...';
   switchConsoleTab('output');
 

@@ -48,7 +48,7 @@ function renderNavbar() {
 
   const currentPath = window.location.pathname;
   const isProblems = currentPath.includes('problems.html');
-  const isCourses = currentPath.includes('courses.html'); 
+  const isCourses = currentPath.includes('courses.html');
   const isWishlist = currentPath.includes('wishlist.html');
 
   if (isLoggedIn()) {
@@ -61,31 +61,30 @@ function renderNavbar() {
         <a href="#" onclick="logout()" class="logout-link">Logout</a>
       </div>
     `;
-
-    // Add secondary navbar if not already present
-    let secondaryNav = document.getElementById('secondary-nav');
-    if (!secondaryNav) {
-      secondaryNav = document.createElement('div');
-      secondaryNav.id = 'secondary-nav';
-      secondaryNav.className = 'secondary-nav';
-      document.querySelector('.main-nav').after(secondaryNav);
-    }
-    
-    secondaryNav.innerHTML = `
-      <div class="container secondary-nav-container">
-        <a href="problems.html" class="${isProblems ? 'active' : ''}">Problems</a>
-        <a href="problems.html" class="${isCourses ? 'active' : ''}">Courses</a>
-        <a href="wishlist.html" class="${isWishlist || currentPath.includes('wishlist') ? 'active' : ''}">Wishlist</a>
-      </div>
-    `;
   } else {
     navActions.innerHTML = `
       <a href="index.html">Login</a>
       <a href="register.html">Sign Up</a>
     `;
-    const secondaryNav = document.getElementById('secondary-nav');
-    if (secondaryNav) secondaryNav.remove();
   }
+
+  // Add secondary navbar always (persistent navigation)
+  let secondaryNav = document.getElementById('secondary-nav');
+  if (!secondaryNav) {
+    secondaryNav = document.createElement('div');
+    secondaryNav.id = 'secondary-nav';
+    secondaryNav.className = 'secondary-nav';
+    const mainNav = document.querySelector('.main-nav') || document.querySelector('nav');
+    if (mainNav) mainNav.after(secondaryNav);
+  }
+  
+  secondaryNav.innerHTML = `
+    <div class="container secondary-nav-container">
+      <a href="problems.html" class="${isProblems ? 'active' : ''}">Problems</a>
+      <a href="courses.html" class="${isCourses ? 'active' : ''}">Courses</a>
+      <a href="wishlist.html" class="${isWishlist || currentPath.includes('wishlist') ? 'active' : ''}">Wishlist</a>
+    </div>
+  `;
 }
 
 function logout() {
@@ -184,6 +183,12 @@ const progress = {
 const wishlist = {
   getCollections: async () => {
     const res = await fetch(`${API_URL}/wishlist/collections`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` }
+    });
+    return res.json();
+  },
+  getCollectionItems: async (collection_id) => {
+    const res = await fetch(`${API_URL}/wishlist/collections/${collection_id}/items`, {
       headers: { 'Authorization': `Bearer ${getToken()}` }
     });
     return res.json();

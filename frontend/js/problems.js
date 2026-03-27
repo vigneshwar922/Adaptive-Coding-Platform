@@ -10,8 +10,17 @@ async function loadProblems() {
   container.innerHTML = '<div class="loading">Loading problems...</div>';
 
   try {
-    // We pass topic to the API, but let's see if we should filter locally for search
-    const data = await problems.getAll(currentTopic);
+    // Get collection ID from URL if present
+    const params = new URLSearchParams(window.location.search);
+    const collectionId = params.get('collection');
+    
+    let data;
+    if (collectionId) {
+        data = await wishlist.getCollectionItems(collectionId);
+        document.querySelector('.page-title').textContent = 'Collection Items';
+    } else {
+        data = await problems.getAll(currentTopic);
+    }
 
     if (!data || data.length === 0) {
       container.innerHTML = '<div class="loading">No problems found.</div>';
@@ -19,7 +28,7 @@ async function loadProblems() {
     }
 
     // Local search filter
-    const filteredData = data.filter(p => p.title.toLowerCase().includes(searchTerm));
+    const filteredData = data.filter(p => (p.title || '').toLowerCase().includes(searchTerm));
 
     if (filteredData.length === 0) {
       container.innerHTML = '<div class="loading">No problems match your search.</div>';
@@ -44,11 +53,11 @@ async function loadProblems() {
       // Status mapping
       let statusHtml = '<span class="status-icon status-none"></span>';
       if (problem.status === 'accepted') {
-        statusHtml = '<span class="status-icon status-solved">•</span>';
-      } else if (problem.status === 'wrong_answer') {
-        statusHtml = '<span class="status-icon status-wrong">•</span>';
+        statusHtml = '<span class="status-icon status-solved">✓</span>';
+      } else if (problem.status === 'wrong_answer' || problem.status === 'wrong') {
+        statusHtml = '<span class="status-icon status-wrong">✗</span>';
       } else if (problem.status === 'partial') {
-        statusHtml = '<span class="status-icon status-partial">•</span>';
+        statusHtml = '<span class="status-icon status-partial">!</span>';
       }
 
       html += `
@@ -57,7 +66,7 @@ async function loadProblems() {
           <td>${problem.title}</td>
           <td><span class="topic-badge">${problem.topic}</span></td>
           <td><span class="badge badge-${problem.difficulty.toLowerCase()}">${problem.difficulty}</span></td>
-          <td onclick="event.stopPropagation(); showWishlistMenu(event, '${problem.id}')">
+          <td onclick="event.stopPropagation(); handleWishlistClick(event, '${problem.id}')">
             <span style="cursor:pointer; font-weight:bold; padding: 4px 8px;">⋮</span>
           </td>
         </tr>
@@ -89,6 +98,30 @@ function filterByTopic(topic) {
   loadProblems();
 }
 
+async function handleWishlistClick(event, problemId) {
+  if (!isLoggedIn()) {
+    window.location.href = 'index.html';
+    return;
+  }
+
+  // 1. Add to default "Wishlist" collection first
+  try {
+    const collections = await wishlist.getCollections();
+    if (Array.isArray(collections)) {
+      let wishlistCol = collections.find(c => c.name.toLowerCase() === 'wishlist');
+      if (!wishlistCol) {
+        wishlistCol = await wishlist.createCollection('Wishlist');
+      }
+      await wishlist.addItem(wishlistCol.id, problemId);
+    }
+  } catch (err) {
+    console.error('Failed to add to default wishlist', err);
+  }
+
+  // 2. Show the menu for more options
+  showWishlistMenu(event, problemId);
+}
+
 async function showWishlistMenu(event, problemId) {
   const existingMenu = document.getElementById('wishlist-popup');
   if (existingMenu) existingMenu.remove();
@@ -105,7 +138,7 @@ async function showWishlistMenu(event, problemId) {
 
   try {
     const collections = await wishlist.getCollections();
-    let html = '<h4>Add to Wishlist</h4>';
+    let html = '<h4>Collections</h4>';
     
     if (collections.length === 0) {
       html += '<p style="font-size:12px; padding:10px;">No collections found.</p>';
