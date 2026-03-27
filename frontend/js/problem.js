@@ -1,34 +1,39 @@
-requireAuth();
+// Shared navbar is handled by api.js renderNavbar
+
 let editor;
 let currentProblemId;
 let currentExamples = [];
-let currentSubmissions =[]; // Add this new variable to store past submissions
+let currentProblemLabels = []; 
+let currentSubmissions =[]; 
 
 const defaultCode = {
   python: '# Write your solution here\n\n',
-  java: 'import java.util.Scanner;\n\npublic class Solution {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Write your solution here\n    }\n}\n',
-  cpp: '#include<iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n',
-  c: '#include<stdio.h>\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n'
+  java: 'import java.util.Scanner;\n\npublic class Main {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Write your solution here\n    }\n}\n', // Changed Solution to Main for Judge0 compatibility
+  javascript: '// Write your solution here\n\n',
+  cpp: '#include<iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n'
 };
-
-function logout() {
-  removeToken();
-  window.location.href = 'index.html';
-}
 
 function getProblemId() {
   const params = new URLSearchParams(window.location.search);
   return params.get('id');
 }
 
-// tab switching
-function showTab(tab) {
-  document.getElementById('panel-result').style.display = tab === 'result' ? 'block' : 'none';
-  document.getElementById('panel-testcases').style.display = tab === 'testcases' ? 'block' : 'none';
-  document.getElementById('tab-result').style.color = tab === 'result' ? '#6366f1' : '#a0a0b0';
-  document.getElementById('tab-result').style.borderBottom = tab === 'result' ? '2px solid #6366f1' : 'none';
-  document.getElementById('tab-testcases').style.color = tab === 'testcases' ? '#6366f1' : '#a0a0b0';
-  document.getElementById('tab-testcases').style.borderBottom = tab === 'testcases' ? '2px solid #6366f1' : 'none';
+// LEFT TAB SWITCHING
+function switchLeftTab(tab) {
+  document.querySelectorAll('.problem-left-section .section-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.problem-left-section .tab-pane').forEach(p => p.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(`tab-content-${tab}`).classList.add('active');
+}
+
+// CONSOLE TAB SWITCHING
+function switchConsoleTab(tab) {
+  document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.console-pane').forEach(p => p.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(`console-${tab}`).classList.add('active');
 }
 
 // initialize Monaco Editor
@@ -40,7 +45,7 @@ require(['vs/editor/editor.main'], function () {
   editor = monaco.editor.create(document.getElementById('editor'), {
     value: defaultCode.python,
     language: 'python',
-    theme: 'vs-dark',
+    theme: 'vs', // Light theme for editor
     fontSize: 14,
     minimap: { enabled: false },
     automaticLayout: true,
@@ -53,12 +58,12 @@ require(['vs/editor/editor.main'], function () {
   loadProblem();
 });
 
-document.getElementById('language-select').addEventListener('change', function () {
-  const lang = this.value;
-  const monacoLang = lang === 'cpp' ? 'cpp' : lang === 'c' ? 'c' : lang;
+function changeLanguage() {
+  const lang = document.getElementById('language-select').value;
+  const monacoLang = lang === 'cpp' ? 'cpp' : lang === 'java' ? 'java' : lang === 'javascript' ? 'javascript' : lang;
   monaco.editor.setModelLanguage(editor.getModel(), monacoLang);
   editor.setValue(defaultCode[lang]);
-});
+}
 
 async function loadProblem() {
   const id = getProblemId();
@@ -72,30 +77,27 @@ async function loadProblem() {
   try {
     const problem = await problems.getById(id);
 
-    document.title = `DSA Platform — ${problem.title}`;
+    document.title = `Random — ${problem.title}`;
     document.getElementById('problem-title').textContent = problem.title;
     document.getElementById('problem-description').textContent = problem.description;
 
     const diffBadge = document.getElementById('problem-difficulty');
     diffBadge.textContent = problem.difficulty;
-    diffBadge.className = `badge badge-${problem.difficulty}`;
+    diffBadge.className = `badge badge-${problem.difficulty.toLowerCase()}`;
 
     document.getElementById('problem-topic').textContent = problem.topic;
 
-    // store examples for run button
     currentExamples = problem.examples || [];
+    currentProblemLabels = problem.input_labels ? problem.input_labels.split(',').map(l => l.trim()) : [];
 
-    // show examples
     const examplesDiv = document.getElementById('problem-examples');
+    examplesDiv.innerHTML = '';
     if (currentExamples.length > 0) {
       currentExamples.forEach((ex, i) => {
         examplesDiv.innerHTML += `
-          <div class="example-box" style="margin-bottom:10px;">
-            <strong style="color:#a0a0b0;">Example ${i + 1}</strong><br><br>
-            <strong style="color:#6366f1;">Input:</strong>
-            <span style="font-family:monospace;">${ex.input.replace(/\\n/g, ' | ')}</span><br>
-            <strong style="color:#22c55e;">Expected Output:</strong>
-            <span style="font-family:monospace;">${ex.expected_output}</span>
+          <div class="example-box" style="margin-bottom:12px; padding:14px; background:#f8fafc; border-radius:8px; border-left:3px solid #6366f1;">
+            <strong style="color:#64748b; font-size:12px; text-transform:uppercase;">Example ${i + 1}</strong>
+            <pre style="margin-top:8px; background:#f1f5f9; padding:8px; border-radius:4px; font-size:13px;">Input: ${ex.input}\nOutput: ${ex.expected_output}</pre>
           </div>
         `;
       });
@@ -105,40 +107,39 @@ async function loadProblem() {
     document.getElementById('problem-content').style.display = 'block';
 
     loadMySubmissions(id);
+    updateConsoleTestCases();
 
   } catch (err) {
     document.getElementById('problem-loading').textContent = 'Failed to load problem.';
   }
 }
 
+function updateConsoleTestCases() {
+  const container = document.getElementById('testcases-content');
+  if (currentExamples.length > 0) {
+    container.innerHTML = `<pre class="console-text">Input: ${currentExamples[0].input}\nExpected: ${currentExamples[0].expected_output}</pre>`;
+  }
+}
+
 async function loadMySubmissions(problemId) {
   try {
     const data = await submissions.getMySubmissions();
-    // Save to our global variable so we can access the code when clicked
     currentSubmissions = data.filter(s => String(s.problem_id) === String(problemId));
 
     const container = document.getElementById('submissions-list');
     if (currentSubmissions.length === 0) {
-      container.innerHTML = '<p style="color:#555; font-size:14px;">No submissions yet.</p>';
+      container.innerHTML = '<p class="empty-state">No submissions yet.</p>';
       return;
     }
 
     let html = '';
-    currentSubmissions.slice(0, 5).forEach((s, index) => {
-      // Changed to toLocaleString() to show both Date AND Time
-      const dateAndTime = new Date(s.submitted_at).toLocaleString(); 
-      
-      // Added cursor:pointer, hover effects, and onclick="viewPastSubmission(index)"
+    currentSubmissions.forEach((s) => {
+      const dateStr = new Date(s.submitted_at).toLocaleString();
       html += `
-        <div onclick="viewPastSubmission(${index})" 
-             style="display:flex; justify-content:space-between; align-items:center;
-             padding:8px 12px; background:#0f0f23; border-radius:8px; margin-bottom:8px; 
-             cursor:pointer; border: 1px solid transparent; transition: border 0.2s;"
-             onmouseover="this.style.border='1px solid #6366f1'" 
-             onmouseout="this.style.border='1px solid transparent'">
-          <span class="badge badge-${s.status}">${s.status}</span>
-          <span style="color:#a0a0b0; font-size:13px;">${s.language}</span>
-          <span style="color:#555; font-size:12px;">${dateAndTime}</span>
+        <div class="submission-item" style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; font-size:14px;">
+          <span class="status-badge-${s.status.toLowerCase()}">${s.status}</span>
+          <span style="color:#64748b;">${s.language}</span>
+          <span style="color:#94a3b8; font-size:12px;">${dateStr}</span>
         </div>
       `;
     });
@@ -147,181 +148,68 @@ async function loadMySubmissions(problemId) {
     console.log('Could not load submissions');
   }
 }
-// RUN against visible example test cases only
+
 async function runCode() {
   const language = document.getElementById('language-select').value;
   const code = editor.getValue();
   const resultContent = document.getElementById('result-content');
 
   if (!code.trim()) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Please write some code first.</span>';
+    resultContent.innerHTML = 'Please write some code first.';
     return;
   }
 
-  if (currentExamples.length === 0) {
-    resultContent.innerHTML = '<span style="color:#a0a0b0;">No example test cases available.</span>';
-    return;
-  }
-
-  resultContent.innerHTML = '<span style="color:#fbbf24;">Running against example test cases...</span>';
-  showTab('result');
+  resultContent.innerHTML = 'Running...';
+  switchConsoleTab('output');
 
   try {
-    let allPassed = true;
-    let resultsHTML = '';
-
-    for (let i = 0; i < currentExamples.length; i++) {
-      const ex = currentExamples[i];
-
-      const res = await fetch('https://adaptive-coding-platform.onrender.com/api/submissions/run', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`
-        },
-        body: JSON.stringify({ language, code, input: ex.input })
-      });
-
-      const data = await res.json();
-      const actualOutput = data.stdout ? data.stdout.trim() : '';
-      const expectedOutput = ex.expected_output.trim();
-      const passed = actualOutput === expectedOutput;
-      if (!passed) allPassed = false;
-
-      resultsHTML += `
-        <div style="margin-bottom:12px; padding:12px; background:#0f0f23;
-          border-radius:8px; border-left:3px solid ${passed ? '#22c55e' : '#ef4444'};">
-          <div style="margin-bottom:8px;">
-            <span style="color:#a0a0b0; font-size:12px; text-transform:uppercase;">Case ${i + 1}</span>
-            <span style="float:right; color:${passed ? '#4ade80' : '#f87171'};
-              font-size:13px; font-weight:bold;">
-              ${passed ? 'Passed' : 'Failed'}
-            </span>
-          </div>
-          <div style="font-family:monospace; font-size:13px; margin-bottom:4px;">
-            <span style="color:#6366f1;">Input: </span>
-            <span style="color:#e0e0e0;">${ex.input.replace(/\\n/g, ' | ')}</span>
-          </div>
-          <div style="font-family:monospace; font-size:13px; margin-bottom:4px;">
-            <span style="color:#22c55e;">Expected: </span>
-            <span style="color:#e0e0e0;">${expectedOutput}</span>
-          </div>
-          <div style="font-family:monospace; font-size:13px;">
-            <span style="color:#fbbf24;">Your output: </span>
-            <span style="color:#e0e0e0;">${actualOutput || (data.stderr ? data.stderr : 'No output')}</span>
-          </div>
+    const ex = currentExamples[0] || { input: '' };
+    const data = await submissions.run(language, code, ex.input);
+    
+    if (data.stderr || data.compile_output) {
+      resultContent.innerHTML = `<span style="color:#ef4444;">${data.stderr || data.compile_output}</span>`;
+    } else {
+      const passed = data.stdout?.trim() === ex.expected_output?.trim();
+      resultContent.innerHTML = `
+        <div style="color:${passed ? '#22c55e' : '#ef4444'}; font-weight:700; margin-bottom:8px;">
+          ${passed ? 'Passed' : 'Failed'}
         </div>
+        <div>Your Output:</div>
+        <pre>${data.stdout || 'No output'}</pre>
+        ${!passed ? `<div>Expected:</div><pre>${ex.expected_output}</pre>` : ''}
       `;
     }
-
-    resultContent.innerHTML = `
-      <div style="margin-bottom:14px; padding:10px 14px; border-radius:8px;
-        background:${allPassed ? '#052e16' : '#3b0000'};
-        color:${allPassed ? '#4ade80' : '#f87171'};
-        font-size:16px; font-weight:bold;">
-        ${allPassed ? 'All example cases passed! Now click Submit.' : 'Some cases failed. Fix your code.'}
-      </div>
-      ${resultsHTML}
-    `;
-
   } catch (err) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Run failed. Make sure backend is running.</span>';
+    resultContent.innerHTML = 'Run failed. Check backend.';
   }
 }
 
-// SUBMIT against all hidden test cases
 async function submitCode() {
   const language = document.getElementById('language-select').value;
   const code = editor.getValue();
   const resultContent = document.getElementById('result-content');
 
-  if (!code.trim()) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Please write some code first.</span>';
-    return;
-  }
-
-  resultContent.innerHTML = '<span style="color:#fbbf24;">Submitting... running against all test cases...</span>';
-  showTab('result');
+  resultContent.innerHTML = 'Submitting...';
+  switchConsoleTab('output');
 
   try {
     const data = await submissions.submit(currentProblemId, language, code);
-
-    if (data.status === 'accepted') {
-      resultContent.innerHTML = `
-        <div style="color:#4ade80; font-size:20px; font-weight:bold; margin-bottom:8px;">
-          Accepted
-        </div>
-        <div style="color:#a0a0b0; font-size:14px;">
-          All test cases passed! Execution time: ${data.execution_time}s
-        </div>
-      `;
-    } else if (data.status === 'wrong_answer') {
-      resultContent.innerHTML = `
-        <div style="color:#f87171; font-size:20px; font-weight:bold; margin-bottom:8px;">
-          Wrong Answer
-        </div>
-        <div style="color:#a0a0b0; font-size:14px;">
-          Your output did not match the expected output. Check your logic and use Run to debug.
-        </div>
-      `;
-    } else if (data.status === 'error') {
-      resultContent.innerHTML = `
-        <div style="color:#c084fc; font-size:20px; font-weight:bold; margin-bottom:8px;">
-          Error
-        </div>
-        <div style="color:#a0a0b0; font-size:14px; font-family:monospace;">
-          ${data.error || 'Runtime error in your code.'}
-        </div>
-      `;
-    }
-
+    
+    resultContent.innerHTML = `
+      <div style="font-size:18px; font-weight:700; color:${data.status === 'accepted' ? '#22c55e' : '#ef4444'};">
+        ${data.status.toUpperCase()}
+      </div>
+      <div>Time: ${data.execution_time}s</div>
+      ${data.error ? `<pre style="color:#ef4444; margin-top:8px;">${data.error}</pre>` : ''}
+    `;
+    
     loadMySubmissions(currentProblemId);
-
   } catch (err) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Submission failed. Make sure backend is running.</span>';
+    resultContent.innerHTML = 'Submission failed.';
   }
 }
 
 function resetCode() {
   const lang = document.getElementById('language-select').value;
   editor.setValue(defaultCode[lang]);
-}
-// Function to show past submission in a Modal popup (LeetCode style)
-function viewPastSubmission(index) {
-  const submission = currentSubmissions[index];
-  if (!submission || !submission.code) return;
-
-  // 1. Set the Title/Status (Color it green if accepted, red if wrong)
-  const statusEl = document.getElementById('modal-status');
-  statusEl.textContent = submission.status;
-  if (submission.status.toLowerCase() === 'accepted') {
-    statusEl.style.color = '#4ade80'; // Green
-  } else {
-    statusEl.style.color = '#f87171'; // Red
-  }
-
-  // 2. Fill in the details
-  document.getElementById('modal-lang').textContent = submission.language;
-  const execTime = submission.execution_time ? parseFloat(submission.execution_time).toFixed(3) + 's' : 'N/A';
-  document.getElementById('modal-time').textContent = execTime;
-  document.getElementById('modal-date').textContent = new Date(submission.submitted_at).toLocaleString();
-  
-  // 3. Put the code in the read-only block
-  document.getElementById('modal-code').textContent = submission.code;
-
-  // 4. Show the modal
-  document.getElementById('submission-modal').style.display = 'block';
-}
-
-// Function to close the modal
-function closeModal() {
-  document.getElementById('submission-modal').style.display = 'none';
-}
-
-// Close the modal if the user clicks anywhere outside of it
-window.onclick = function(event) {
-  const modal = document.getElementById('submission-modal');
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
 }

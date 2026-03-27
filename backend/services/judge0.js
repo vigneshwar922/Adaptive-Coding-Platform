@@ -5,7 +5,8 @@ const LANGUAGE_MAP = {
   python: 71,
   java: 62,
   c: 50,
-  cpp: 54
+  cpp: 54,
+  javascript: 63
 };
 
 exports.runCode = async (code, language, stdin) => {

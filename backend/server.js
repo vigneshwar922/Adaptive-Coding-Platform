@@ -30,6 +30,8 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/problems', require('./routes/problems'));
 app.use('/api/submissions', submitLimiter, require('./routes/submissions'));
 app.use('/api/progress', require('./routes/progress'));
+app.use('/api/wishlist', require('./routes/wishlist'));
+app.use('/api/code', require('./routes/codeRoutes'));
 
 // Home Route for testing
 app.get('/', (req, res) => {

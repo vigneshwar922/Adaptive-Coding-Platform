@@ -9,44 +9,51 @@
 <body>
 
   <nav>
-    <a href="problems.html" class="logo">Adaptive-Coding-Platform</a>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#" onclick="logout()">Logout</a>
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Dynamic content from api.js -->
     </div>
   </nav>
 
-  <div class="container">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-      <h1 class="page-title" style="margin-bottom:0">Problems</h1>
-      <span id="welcome-msg" style="color:#a0a0b0; font-size:14px;"></span>
-    </div>
+  <div class="container container-wide">
+    <div class="problems-layout">
+      <!-- Left side: Problems -->
+      <div class="problems-main">
+        <div class="section-header">
+          <h1 class="page-title">Problems</h1>
+          <div class="search-bar">
+            <input type="text" id="problem-search" placeholder="Search problems..." oninput="loadProblems()">
+          </div>
+        </div>
 
-    <div class="filters">
-      <select id="filter-topic" onchange="loadProblems()">
-        <option value="">All Topics</option>
-        <option value="arrays">Arrays</option>
-        <option value="strings">Strings</option>
-        <option value="stacks">Stacks</option>
-        <option value="dp">Dynamic Programming</option>
-        <option value="trees">Trees</option>
-        <option value="graphs">Graphs</option>
-        <option value="sorting">Sorting</option>
-      </select>
+        <div id="problems-container">
+          <!-- Problems table will be injected here -->
+        </div>
+      </div>
 
-      <select id="filter-difficulty" onchange="loadProblems()">
-        <option value="">All Difficulties</option>
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-
-    <div id="problems-container">
-      <div class="loading">Loading problems...</div>
+      <!-- Right side: Topics -->
+      <div class="topics-sidebar">
+        <h3>Topics</h3>
+        <div class="topic-list" id="topic-list">
+          <div class="topic-item active" onclick="filterByTopic('')">All Topics</div>
+          <div class="topic-item" onclick="filterByTopic('arrays')">Arrays</div>
+          <div class="topic-item" onclick="filterByTopic('strings')">Strings</div>
+          <div class="topic-item" onclick="filterByTopic('dp')">Dynamic Programming</div>
+          <div class="topic-item" onclick="filterByTopic('trees')">Trees</div>
+          <div class="topic-item" onclick="filterByTopic('graphs')">Graphs</div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <footer class="main-footer">
+    <p class="dev-title">Developed by</p>
+    <div class="team-names">
+      <a href="#">Akula Vaishnavi</a>
+      <a href="#">Katteboina ShashiNandini</a>
+      <a href="#">Pokala Vigneshwar</a>
+    </div>
+  </footer>
   <script src="js/api.js"></script>
   <script src="js/problems.js"></script>
 

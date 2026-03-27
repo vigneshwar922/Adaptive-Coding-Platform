@@ -1,19 +1,13 @@
-requireAuth();
-
-function logout() {
-  removeToken();
-  window.location.href = 'index.html';
-}
-
-// show welcome message
-const user = getUser();
-if (user) {
-  document.getElementById('welcome-msg').textContent =
-    `Welcome back, ${user.name}! Keep practicing to improve your skills.`;
-}
+// logout function is now handled by api.js renderNavbar
 
 // load everything when page opens
 async function loadDashboard() {
+  const user = getUser();
+  if (user) {
+    document.getElementById('welcome-msg').textContent =
+      `Welcome back, ${user.name}! You've solved ${document.getElementById('total-solved')?.textContent || 0} problems so far.`;
+  }
+
   await Promise.all([
     loadProgress(),
     loadRecommendations(),
@@ -33,31 +27,31 @@ async function loadProgress() {
     const topicContainer = document.getElementById('topic-progress');
 
     if (!data || data.length === 0) {
-      topicContainer.innerHTML = '<p style="color:#555; font-size:14px;">No progress yet. Start solving problems!</p>';
+      topicContainer.innerHTML = '<p class="empty-state">No progress yet. Start solving problems!</p>';
       return;
     }
 
     let topicHTML = '';
 
     data.forEach(p => {
-      totalEasy += p.easy_solved;
-      totalMedium += p.medium_solved;
-      totalHard += p.hard_solved;
+      totalEasy += (p.easy_solved || 0);
+      totalMedium += (p.medium_solved || 0);
+      totalHard += (p.hard_solved || 0);
 
-      const total = p.easy_solved + p.medium_solved + p.hard_solved;
-      const maxProblems = 10;
+      const total = (p.easy_solved || 0) + (p.medium_solved || 0) + (p.hard_solved || 0);
+      const maxProblems = 20; // Increased for better scale
       const percent = Math.min(Math.round((total / maxProblems) * 100), 100);
 
       topicHTML += `
-        <div style="margin-bottom:16px;">
-          <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-            <span style="text-transform:capitalize; font-size:14px;">${p.topic}</span>
-            <span style="color:#a0a0b0; font-size:13px;">
-              ${p.easy_solved} easy · ${p.medium_solved} medium · ${p.hard_solved} hard
+        <div class="progress-item" style="margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+            <span style="text-transform:capitalize; font-size:15px; font-weight:600; color:#1e293b;">${p.topic}</span>
+            <span style="color:#64748b; font-size:13px;">
+              ${p.easy_solved || 0} E · ${p.medium_solved || 0} M · ${p.hard_solved || 0} H
             </span>
           </div>
-          <div class="progress-bar-container">
-            <div class="progress-bar" style="width:${percent}%"></div>
+          <div class="progress-bar-container" style="background:#f1f5f9; height:10px; border-radius:10px;">
+            <div class="progress-bar" style="width:${percent}%; background:#6366f1; height:100%; border-radius:10px;"></div>
           </div>
         </div>
       `;
@@ -72,8 +66,7 @@ async function loadProgress() {
     document.getElementById('total-solved').textContent = totalEasy + totalMedium + totalHard;
 
   } catch (err) {
-    document.getElementById('topic-progress').innerHTML =
-      '<p style="color:#f87171;">Failed to load progress.</p>';
+    document.getElementById('topic-progress').innerHTML = '<p class="error-msg">Failed to load progress.</p>';
   }
 }
 
@@ -84,24 +77,18 @@ async function loadRecommendations() {
     const container = document.getElementById('recommendations');
 
     if (!data || data.length === 0) {
-      container.innerHTML = '<p style="color:#555; font-size:14px;">No recommendations yet.</p>';
+      container.innerHTML = '<p class="empty-state">Solve more problems to get recommendations.</p>';
       return;
     }
 
     let html = '';
-    data.forEach(problem => {
+    data.slice(0, 3).forEach(problem => {
       html += `
-        <div onclick="window.location.href='problem.html?id=${problem.id}'"
-          style="display:flex; justify-content:space-between; align-items:center;
-          padding:12px 16px; background:#0f0f23; border-radius:8px;
-          margin-bottom:10px; cursor:pointer; transition:background 0.2s;"
-          onmouseover="this.style.background='#16213e'"
-          onmouseout="this.style.background='#0f0f23'">
-          <span style="font-size:15px;">${problem.title}</span>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <span style="color:#a0a0b0; font-size:13px; text-transform:capitalize;">${problem.topic}</span>
-            <span class="badge badge-${problem.difficulty}">${problem.difficulty}</span>
-          </div>
+        <div class="rec-card" onclick="window.location.href='problem.html?id=${problem.id}'"
+          style="padding:16px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px;
+          margin-bottom:12px; cursor:pointer; transition:all 0.2s; display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-weight:600; color:#1e293b;">${problem.title}</span>
+          <span class="badge badge-${problem.difficulty.toLowerCase()}">${problem.difficulty}</span>
         </div>
       `;
     });
@@ -109,8 +96,7 @@ async function loadRecommendations() {
     container.innerHTML = html;
 
   } catch (err) {
-    document.getElementById('recommendations').innerHTML =
-      '<p style="color:#f87171;">Failed to load recommendations.</p>';
+    document.getElementById('recommendations').innerHTML = '<p class="error-msg">Failed to load recommendations.</p>';
   }
 }
 
@@ -121,45 +107,38 @@ async function loadRecentSubmissions() {
     const container = document.getElementById('recent-submissions');
 
     if (!data || data.length === 0) {
-      container.innerHTML = '<p style="color:#555; font-size:14px;">No submissions yet.</p>';
+      container.innerHTML = '<p class="empty-state">No submissions yet.</p>';
       return;
     }
 
     let html = `
-      <table class="problems-table">
+      <table class="problems-table dashboard-table">
         <thead>
           <tr>
             <th>Problem</th>
-            <th>Language</th>
             <th>Status</th>
-            <th>Time</th>
             <th>Date</th>
           </tr>
         </thead>
         <tbody>
     `;
 
-    data.slice(0, 10).forEach(s => {
-  const date = new Date(s.submitted_at).toLocaleDateString();
-  const lang = s.language || '-';
-  const time = s.execution_time ? parseFloat(s.execution_time).toFixed(3) + 's' : '-';
-  html += `
-    <tr>
-      <td>${s.title}</td>
-      <td style="text-transform:capitalize;">${lang}</td>
-      <td><span class="badge badge-${s.status}">${s.status}</span></td>
-      <td style="color:#a0a0b0;">${time}</td>
-      <td style="color:#555; font-size:13px;">${date}</td>
-    </tr>
-  `;
-});
+    data.slice(0, 5).forEach(s => {
+      const date = new Date(s.submitted_at).toLocaleDateString();
+      html += `
+        <tr>
+          <td style="font-weight:600; color:#1e293b;">${s.title}</td>
+          <td><span class="status-badge-${s.status.toLowerCase()}">${s.status}</span></td>
+          <td style="color:#64748b; font-size:13px;">${date}</td>
+        </tr>
+      `;
+    });
 
     html += '</tbody></table>';
     container.innerHTML = html;
 
   } catch (err) {
-    document.getElementById('recent-submissions').innerHTML =
-      '<p style="color:#f87171;">Failed to load submissions.</p>';
+    document.getElementById('recent-submissions').innerHTML = '<p class="error-msg">Failed to load submissions.</p>';
   }
 }
 

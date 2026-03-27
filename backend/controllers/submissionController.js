@@ -1,3 +1,4 @@
+
 const pool = require('../config/db');
 const { runCode: executeCode } = require('../services/judge0');
 
@@ -65,23 +66,43 @@ exports.submitCode = async (req, res) => {
     );
 
     if (allPassed) {
+      // Logic: Only increment solved count if NOT already solved
+      const alreadySolved = await pool.query(
+        'SELECT id FROM submissions WHERE user_id = $1 AND problem_id = $2 AND status = \'accepted\' AND id != $3 LIMIT 1',
+        [user_id, problem_id, submission.rows[0].id]
+      );
+
       const problem = await pool.query(
         'SELECT topic, difficulty FROM problems WHERE id = $1',
         [problem_id]
       );
       const { topic, difficulty } = problem.rows[0];
-      const col = `${difficulty}_solved`;
+      const col = `${difficulty.toLowerCase()}_solved`;
 
-      await pool.query(
-        `INSERT INTO user_progress (user_id, topic, ${col}, total_attempts)
-         VALUES ($1, $2, 1, 1)
-         ON CONFLICT (user_id, topic)
-         DO UPDATE SET
-           ${col} = user_progress.${col} + 1,
-           total_attempts = user_progress.total_attempts + 1,
-           last_active = NOW()`,
-        [user_id, topic]
-      );
+      if (alreadySolved.rows.length === 0) {
+        // First time solving! Increase the count for the specific difficulty
+        await pool.query(
+          `INSERT INTO user_progress (user_id, topic, ${col}, total_attempts)
+           VALUES ($1, $2, 1, 1)
+           ON CONFLICT (user_id, topic)
+           DO UPDATE SET
+             ${col} = user_progress.${col} + 1,
+             total_attempts = user_progress.total_attempts + 1,
+             last_active = NOW()`,
+          [user_id, topic]
+        );
+      } else {
+        // Already solved, just increment total attempts
+        await pool.query(
+          `INSERT INTO user_progress (user_id, topic, ${col}, total_attempts)
+           VALUES ($1, $2, 0, 1)
+           ON CONFLICT (user_id, topic)
+           DO UPDATE SET
+             total_attempts = user_progress.total_attempts + 1,
+             last_active = NOW()`,
+          [user_id, topic]
+        );
+      }
     }
 
     res.json({
@@ -106,7 +127,7 @@ exports.getUserSubmissions = async (req, res) => {
        FROM submissions s
        JOIN problems p ON s.problem_id = p.id
        WHERE s.user_id = $1
-       ORDER BY s.submitted_at DESC`,[req.user.id]
+       ORDER BY s.submitted_at DESC`, [req.user.id]
     );
     res.json(result.rows);
   } catch (err) {

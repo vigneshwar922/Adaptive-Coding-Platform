@@ -8,110 +8,98 @@
 </head>
 <body>
 
-  <nav>
-    <a href="problems.html" class="logo">Adaptive-Coding-Platform</a>
-    <div class="nav-links">
-      <a href="problems.html">Problems</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#" onclick="logout()">Logout</a>
+  <nav class="main-nav">
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Shared navbar logic from api.js -->
     </div>
   </nav>
 
-  <div class="container" style="max-width:100%; padding: 16px 24px;">
-    <div class="problem-layout">
-
-      <!-- LEFT SIDE: Problem description -->
-      <div class="problem-description">
-        <div id="problem-loading" class="loading">Loading problem...</div>
-        <div id="problem-content" style="display:none;">
-          <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px;">
-            <h2 id="problem-title"></h2>
-            <span id="problem-difficulty" class="badge"></span>
-            <span id="problem-topic" style="color:#a0a0b0; font-size:13px;"></span>
-          </div>
-          <p id="problem-description"></p>
-
-          <h4 style="color:#a0a0b0; margin-bottom:8px; font-size:13px; text-transform:uppercase;">Examples</h4>
-          <div id="problem-examples"></div>
-
-          <!-- Submissions history -->
-          <div style="margin-top:28px;">
-            <h4 style="color:#a0a0b0; margin-bottom:12px; font-size:13px; text-transform:uppercase;">My Submissions</h4>
-            <div id="submissions-list">
-              <p style="color:#555; font-size:14px;">No submissions yet.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- RIGHT SIDE: Code editor -->
-      <div class="code-panel">
-
-        <div class="code-toolbar">
-          <select id="language-select">
-            <option value="python">Python</option>
-            <option value="java">Java</option>
-            <option value="cpp">C++</option>
-            <option value="c">C</option>
-          </select>
-          <div style="display:flex; gap:10px;">
-            <button class="btn" style="background:#2d2d44; color:#e0e0e0;" onclick="runCode()">Run</button>
-            <button class="btn btn-success" onclick="submitCode()">Submit</button>
-            <button class="btn" style="background:#1a1a2e; color:#6366f1; border:1px solid #6366f1;" onclick="resetCode()">Reset</button>
-          </div>
-        </div>
-
-        <!-- Monaco Editor -->
-        <div id="editor" style="height:450px; border-radius:10px; overflow:hidden;"></div>
-
-        <!-- Result box -->
-        <div class="result-box" id="result-box">
-          <div style="display:flex; gap:12px; margin-bottom:12px;">
-            <button onclick="showTab('result')" id="tab-result"
-              style="background:none; border:none; color:#6366f1; font-size:13px;
-              cursor:pointer; border-bottom:2px solid #6366f1; padding-bottom:4px;">
-              Result
-            </button>
-            <button onclick="showTab('testcases')" id="tab-testcases"
-              style="background:none; border:none; color:#a0a0b0; font-size:13px;
-              cursor:pointer; padding-bottom:4px;">
-              Test Cases
-            </button>
-          </div>
-
-          <div id="panel-result">
-            <div id="result-content" style="color:#a0a0b0; font-size:14px;">
-              Write your code and click Run or Submit.
-            </div>
-          </div>
-
-          <div id="panel-testcases" style="display:none;">
-            <div id="testcases-content" style="font-size:14px; color:#a0a0b0;">
-              Click Run to test against example cases.
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-  <!-- ADD THIS RIGHT BEFORE YOUR SCRIPTS IN problem.html -->
-  <div id="submission-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <h2 id="modal-status" style="margin-bottom: 10px; text-transform: capitalize;"></h2>
+  <div class="problem-page-container">
+    <div class="problem-split-view">
       
-      <div style="display: flex; gap: 20px; color: #a0a0b0; font-size: 14px; margin-bottom: 20px;">
-        <span>Language: <strong id="modal-lang" style="color: #e0e0e0; text-transform: capitalize;"></strong></span>
-        <span>Runtime: <strong id="modal-time" style="color: #e0e0e0;"></strong></span>
-        <span>Submitted: <strong id="modal-date" style="color: #e0e0e0;"></strong></span>
+      <!-- LEFT SECTION: Description & Submissions -->
+      <div class="problem-left-section">
+        <div class="section-tabs">
+          <div class="section-tab active" onclick="switchLeftTab('statement')">Problem Statement</div>
+          <div class="section-tab" onclick="switchLeftTab('submissions')">Submissions</div>
+        </div>
+
+        <div id="tab-content-statement" class="tab-pane active">
+          <div id="problem-loading" class="loading">Loading problem...</div>
+          <div id="problem-content" style="display:none;">
+            <div class="problem-header">
+              <h2 id="problem-title"></h2>
+              <div class="problem-meta">
+                <span id="problem-difficulty" class="badge"></span>
+                <span id="problem-topic" class="topic-tag"></span>
+              </div>
+            </div>
+            <div id="problem-description" class="markdown-content"></div>
+            
+            <div class="examples-section">
+              <h4>Example Cases</h4>
+              <div id="problem-examples"></div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-content-submissions" class="tab-pane">
+          <div class="submissions-container">
+            <h4>History</h4>
+            <div id="submissions-list">
+              <p class="empty-state">No submissions yet.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div class="code-block-container">
-        <pre><code id="modal-code"></code></pre>
+      <!-- RIGHT SECTION: Editor -->
+      <div class="problem-right-section">
+        <div class="editor-header">
+          <div class="language-picker">
+            <select id="language-select" onchange="changeLanguage()">
+              <option value="python">Python</option>
+              <option value="java">Java</option>
+              <option value="javascript">JavaScript</option>
+              <option value="cpp">C++</option>
+            </select>
+          </div>
+          <div class="editor-actions">
+            <button class="btn-icon" title="Reset Code" onclick="resetCode()">↺</button>
+          </div>
+        </div>
+
+        <div id="editor-container">
+          <div id="editor"></div>
+        </div>
+        
+        <!-- FIXED BOTTOM CONSOLE -->
+        <div class="fixed-console">
+          <div class="console-tabs">
+            <div class="console-tab active" onclick="switchConsoleTab('output')">Console</div>
+            <div class="console-tab" onclick="switchConsoleTab('testcases')">Test Cases</div>
+          </div>
+          
+          <div class="console-body">
+            <div id="console-output" class="console-pane active">
+              <pre id="result-content" class="console-text">Output will appear here...</pre>
+            </div>
+            <div id="console-testcases" class="console-pane">
+              <div id="testcases-content" class="console-text">Example test cases will be shown here.</div>
+            </div>
+          </div>
+
+          <div class="console-footer">
+            <button class="btn btn-outline" onclick="runCode()">Run</button>
+            <button class="btn btn-primary" onclick="submitCode()">Submit</button>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
+
   <!-- Monaco Editor CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
   <script src="js/api.js"></script>
