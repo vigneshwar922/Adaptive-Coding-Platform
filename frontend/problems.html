@@ -1,54 +1,79 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adaptive-Coding-Platform — Problems</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-  <nav>
-    <a href="problems.html" class="logo">Adaptive-Coding-Platform</a>
-    <div class="nav-links">
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#" onclick="logout()">Logout</a>
+  <nav class="main-nav">
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Dynamic content from api.js -->
     </div>
   </nav>
 
-  <div class="container">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
-      <h1 class="page-title" style="margin-bottom:0">Problems</h1>
-      <span id="welcome-msg" style="color:#a0a0b0; font-size:14px;"></span>
-    </div>
+  <div class="container container-wide">
+    <div class="problems-layout">
+      <!-- Left side: Problems -->
+      <div class="problems-main">
+        <div class="section-header">
+          <h1 class="page-title">Problems</h1>
+          <div class="search-bar">
+            <input type="text" id="problem-search" placeholder="Search problems..." oninput="loadProblems()">
+          </div>
+        </div>
 
-    <div class="filters">
-      <select id="filter-topic" onchange="loadProblems()">
-        <option value="">All Topics</option>
-        <option value="arrays">Arrays</option>
-        <option value="strings">Strings</option>
-        <option value="stacks">Stacks</option>
-        <option value="dp">Dynamic Programming</option>
-        <option value="trees">Trees</option>
-        <option value="graphs">Graphs</option>
-        <option value="sorting">Sorting</option>
-      </select>
+        <div id="problems-container">
+          <!-- Problems table will be injected here -->
+        </div>
+      </div>
 
-      <select id="filter-difficulty" onchange="loadProblems()">
-        <option value="">All Difficulties</option>
-        <option value="easy">Easy</option>
-        <option value="medium">Medium</option>
-        <option value="hard">Hard</option>
-      </select>
-    </div>
-
-    <div id="problems-container">
-      <div class="loading">Loading problems...</div>
+      <!-- Right side: Topics -->
+      <div class="topics-sidebar">
+        <div class="topics-header">
+          <h3>Topics</h3>
+        </div>
+        <div class="topic-search-container">
+          <span class="topic-search-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input type="text" id="topic-search-input" placeholder="Search topics..." oninput="filterTopicsList()">
+        </div>
+        <div class="topics-box">
+          <div class="topic-list" id="topic-list">
+            <div class="topic-item active" onclick="filterByTopic('')">All Topics</div>
+            <div class="topic-item" onclick="filterByTopic('arrays')">Arrays</div>
+            <div class="topic-item" onclick="filterByTopic('strings')">Strings</div>
+            <div class="topic-item" onclick="filterByTopic('dp')">Dynamic Programming</div>
+            <div class="topic-item" onclick="filterByTopic('trees')">Trees</div>
+            <div class="topic-item" onclick="filterByTopic('graphs')">Graphs</div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <footer class="main-footer">
+    <p class="dev-title">Developed by</p>
+    <div class="team-names">
+      <a href="https://www.linkedin.com/in/akula-vaishnavi-663873281/" target="_blank">Akula Vaishnavi</a>
+      <a href="https://www.linkedin.com/in/shashinandini-katteboina-0802a62b0/" target="_blank">Katteboina
+        ShashiNandini</a>
+      <a href="https://www.linkedin.com/in/vigneshwar-pokala-14b24931b/" target="_blank">Pokala Vigneshwar</a>
+    </div>
+  </footer>
   <script src="js/api.js"></script>
   <script src="js/problems.js"></script>
 
 </body>
+
 </html>

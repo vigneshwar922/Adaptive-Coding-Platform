@@ -1,85 +1,508 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DSA Platform — Dashboard</title>
+  <title>Adaptive-Coding-Platform — Profile</title>
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* PROFILE HERO */
+    .profile-hero {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    /* ── Solved ring card ── */
+    .solved-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      flex: 1;
+      min-width: 300px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      flex-shrink: 0;
+    }
+
+    .ring-wrap svg {
+      transform: rotate(-90deg);
+    }
+
+    .ring-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      line-height: 1.2;
+    }
+
+    .ring-total {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .ring-of {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .ring-label {
+      font-size: 12px;
+      color: #22c55e;
+      margin-top: 2px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      justify-content: center;
+    }
+
+    .diff-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .diff-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .diff-btn {
+      padding: 4px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+      min-width: 68px;
+      text-align: center;
+    }
+
+    .diff-easy {
+      background: #e0e4e2;
+      color: #4ade80;
+    }
+
+    .diff-medium {
+      background: #e0e4e2;
+      color: #fbbf24;
+    }
+
+    .diff-hard {
+      background: #e0e4e2;
+      color: #f87171;
+    }
+
+    .diff-count {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1e293b;
+    }
+
+    .diff-slash {
+      font-size: 14px;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .attempting-row {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .attempting-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #38bdf8;
+      display: inline-block;
+    }
+
+    /* ── Badges card ── */
+    .badges-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px 28px;
+      min-width: 200px;
+      flex: 0 0 220px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .badges-title {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .badges-count {
+      font-size: 32px;
+      font-weight: 800;
+      color: #1e293b;
+      margin-bottom: 16px;
+    }
+
+    .badge-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #4338ca);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      margin-bottom: 8px;
+    }
+
+    .badge-recent-label {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .badge-recent-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    /* ── Heatmap card ── */
+    .heatmap-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .heatmap-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .heatmap-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+    }
+
+    .heatmap-title span {
+      color: #4ade80;
+    }
+
+    .heatmap-stats {
+      display: flex;
+      gap: 24px;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    .heatmap-stats strong {
+      color: #94a3b8;
+    }
+
+    .heatmap-grid-wrap {
+      overflow-x: auto;
+    }
+
+    .heatmap-grid {
+      display: flex;
+      gap: 3px;
+      min-width: 600px;
+    }
+
+    .heatmap-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .heatmap-cell {
+      width: 12px;
+      height: 12px;
+      border-radius: 2px;
+      background: #f1f5f9;
+    }
+
+    .heat-0 {
+      background: #f1f5f9;
+    }
+
+    .heat-1 {
+      background: #dcfce7;
+    }
+
+    .heat-2 {
+      background: #bbf7d0;
+    }
+
+    .heat-3 {
+      background: #86efac;
+    }
+
+    .heat-4 {
+      background: #4ade80;
+    }
+
+    .heatmap-months {
+      display: flex;
+      gap: 3px;
+      min-width: 600px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #475569;
+    }
+
+    /* ── Stats & submissions ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 700px) {
+      .stats-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .dark-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+
+    .dark-card h3 {
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #475569;
+      margin-bottom: 18px;
+    }
+
+    .sub-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 11px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+    }
+
+    .sub-row:last-child {
+      border-bottom: none;
+    }
+
+    .sub-title {
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .sub-date {
+      color: #475569;
+      font-size: 12px;
+    }
+  </style>
 </head>
+
 <body>
 
-  <nav>
-    <a href="problems.html" class="logo">DSA Platform</a>
-    <div class="nav-links">
-      <a href="problems.html">Problems</a>
-      <a href="dashboard.html">Dashboard</a>
-      <a href="#" onclick="logout()">Logout</a>
-    </div>
+  <nav class="main-nav">
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links"></div>
   </nav>
 
-  <div class="container">
-
-    <!-- Welcome header -->
-    <div style="margin-bottom:28px;">
-      <h1 class="page-title" style="margin-bottom:4px;">Dashboard</h1>
-      <p id="welcome-msg" style="color:#a0a0b0; font-size:15px;"></p>
-    </div>
-
-    <!-- Stats cards -->
-    <div class="dashboard-grid" style="margin-bottom:30px;">
-      <div class="card">
-        <h3>Total Solved</h3>
-        <div class="stat-number" id="total-solved">0</div>
-        <div class="stat-label">problems solved</div>
-      </div>
-      <div class="card">
-        <h3>Easy Solved</h3>
-        <div class="stat-number" style="color:#4ade80;" id="easy-solved">0</div>
-        <div class="stat-label">easy problems</div>
-      </div>
-      <div class="card">
-        <h3>Medium Solved</h3>
-        <div class="stat-number" style="color:#fbbf24;" id="medium-solved">0</div>
-        <div class="stat-label">medium problems</div>
-      </div>
-      <div class="card">
-        <h3>Hard Solved</h3>
-        <div class="stat-number" style="color:#f87171;" id="hard-solved">0</div>
-        <div class="stat-label">hard problems</div>
-      </div>
-    </div>
-
-    <!-- Progress per topic -->
-    <div class="card" style="margin-bottom:24px;">
-      <h3>Progress by Topic</h3>
-      <div id="topic-progress">
-        <div class="loading">Loading progress...</div>
-      </div>
-    </div>
-
-    <!-- Recommendations -->
-    <div class="card" style="margin-bottom:24px;">
-      <h3>Recommended for You</h3>
-      <p style="color:#a0a0b0; font-size:13px; margin-bottom:16px;">
-        Based on your current skill level
-      </p>
-      <div id="recommendations">
-        <div class="loading">Loading recommendations...</div>
+  <div class="container container-wide dashboard-container-split">
+    <!-- Left Sidebar: Profile Identity -->
+    <div class="dashboard-sidebar">
+      <div class="card profile-card" style="text-align:center; padding:32px;">
+        <div class="profile-photo-container">
+          <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="User"
+            class="profile-photo-large">
+          <div class="photo-edit-overlay" onclick="document.getElementById('photo-upload-input').click()">
+            <span>Change Photo</span>
+          </div>
+        </div>
+        <input type="file" id="photo-upload-input" style="display:none" accept="image/*" onchange="handlePhotoUpload(event)">
+        <div class="profile-meta-top">
+          <h2 id="display-username" class="profile-username-main">vigneshwar92</h2>
+          <div class="profile-rank">Rank <span id="user-rank-val">889,402</span></div>
+        </div>
+        <div class="profile-followers" style="justify-content:center;">
+          <span><strong>0</strong> Following</span>
+          <span style="margin: 0 8px; color: #e2e8f0;">|</span>
+          <span><strong>0</strong> Followers</span>
+        </div>
+        <div style="position: relative;">
+          <button class="btn btn-outline btn-sm btn-edit-profile" style="width: auto; margin-top: 16px;"
+            onclick="toggleEditProfileDialog()">Edit Profile</button>
+            
+          <div id="edit-profile-dialog" style="display:none; position:absolute; background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:20px; box-shadow:0 10px 15px -3px rgba(0,0,0,0.1); width:280px; z-index:100; text-align:left; margin-top:8px; left:50%; transform:translateX(-50%);">
+            <h4 style="margin-bottom:16px; font-size:14px; text-transform:uppercase; color:#64748b;">Edit Profile Details</h4>
+            <div style="margin-bottom:12px;">
+              <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Username</label>
+              <input type="text" id="edit-username-input" style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:6px; font-size:13px; background:#f8fafc;" />
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Email</label>
+              <input type="email" id="edit-email-input" style="width:100%; padding:8px 12px; border:1px solid #e2e8f0; border-radius:6px; font-size:13px; background:#f8fafc;" />
+            </div>
+            <div style="display:flex; justify-content:flex-end; gap:8px;">
+              <button class="btn btn-outline" style="padding:6px 12px; font-size:12px;" onclick="toggleEditProfileDialog()">Cancel</button>
+              <button class="btn btn-primary" style="padding:6px 12px; font-size:12px;" onclick="saveProfileDetails()">Save</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Recent submissions -->
-    <div class="card">
-      <h3>Recent Submissions</h3>
-      <div id="recent-submissions">
-        <div class="loading">Loading submissions...</div>
+    <!-- Right Content: Stats & Progress (Stacked Vertically) -->
+    <div class="dashboard-main-content">
+      <!-- Solved Ring & Difficulty Breakdown -->
+      <div class="card solved-card"
+        style="display:flex; align-items:center; justify-content:space-around; padding:32px;">
+        <div class="ring-wrap" style="margin-right:0;">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="50" fill="none" stroke="#f1f5f9" stroke-width="10" />
+            <circle id="ring-easy" cx="60" cy="60" r="50" fill="none" stroke="#4ade80" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="0 314" style="transition:stroke-dasharray 0.8s ease;" />
+            <circle id="ring-medium" cx="60" cy="60" r="50" fill="none" stroke="#fbbf24" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="0 314" style="transition:stroke-dasharray 0.8s ease;" />
+            <circle id="ring-hard" cx="60" cy="60" r="50" fill="none" stroke="#f87171" stroke-width="10"
+              stroke-linecap="round" stroke-dasharray="0 314" style="transition:stroke-dasharray 0.8s ease;" />
+          </svg>
+          <div class="ring-center">
+            <div class="ring-total"><span id="ring-total-num">0</span><span style="font-size:13px;color:#475569;">/<span
+                  id="ring-total-max">0</span></span></div>
+            <div class="ring-label">✓ Solved</div>
+          </div>
+        </div>
+        <div class="diff-breakdown" style="flex:1; max-width:300px; margin-left:40px;">
+          <div class="diff-row">
+            <span class="diff-btn diff-easy">Easy</span>
+            <span class="diff-count" id="d-easy">0</span>
+            <span class="diff-slash">/<span id="d-easy-total">-</span></span>
+          </div>
+          <div class="diff-row">
+            <span class="diff-btn diff-medium">Med.</span>
+            <span class="diff-count" id="d-medium">0</span>
+            <span class="diff-slash">/<span id="d-medium-total">-</span></span>
+          </div>
+          <div class="diff-row">
+            <span class="diff-btn diff-hard">Hard</span>
+            <span class="diff-count" id="d-hard">0</span>
+            <span class="diff-slash">/<span id="d-hard-total">-</span></span>
+          </div>
+        </div>
       </div>
-    </div>
 
+      <!-- Badges -->
+      <div class="card badges-card" style="text-align:center; padding:32px;">
+        <div class="badges-title" style="justify-content:center; margin-bottom:20px;">
+          Badges
+          <span style="color:#6366f1; cursor:pointer; font-size:18px; margin-left:8px;">›</span>
+        </div>
+        <div class="badge-icon" style="margin-bottom:16px;">
+          <img src="images/badge-50-days.png" style="width:80px;"
+            alt="badge">
+        </div>
+        <div class="badge-recent-name" id="badge-name" style="font-size:18px; font-weight:700; margin-bottom:8px;">50
+          Days
+          Badge 2025</div>
+        <div class="badge-recent-label">Most Recent Badge</div>
+      </div>
+
+      <!-- Submission heatmap -->
+      <div class="heatmap-card">
+        <div class="heatmap-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <div class="heatmap-title">
+            <span id="heatmap-total">0</span> submissions in 
+            <select id="heatmap-year-select" style="background:transparent; border:none; font-weight:700; color:#1e293b; font-size:16px; cursor:pointer; outline:none; padding:0 4px;">
+              <option value="last-year">the past one year</option>
+              <option value="2026">2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+          <div class="heatmap-stats" style="font-size:13px; color:#64748b; display:flex; gap:16px;">
+            <span>Total active days: <strong id="active-days" style="color:#1e293b;">0</strong></span>
+            <span>Max streak: <strong id="max-streak" style="color:#1e293b;">0</strong></span>
+          </div>
+        </div>
+        <div class="heatmap-grid-wrap">
+          <div class="heatmap-grid" id="heatmap-grid"></div>
+          <div class="heatmap-months" id="heatmap-months"></div>
+        </div>
+      </div>
+
+      <!-- Topic progress (Now stacked vertically) -->
+      <div class="dark-card">
+        <h3 style="margin-bottom:20px;">Progress by Topic</h3>
+        <div id="topic-progress">
+          <div class="loading" style="color:#475569;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Recent submissions (Now stacked vertically) -->
+      <div class="dark-card">
+        <h3 style="margin-bottom:20px;">Recent Submissions</h3>
+        <div id="recent-submissions">
+          <div class="loading" style="color:#475569;">Loading...</div>
+        </div>
+      </div>
+
+      <!-- Recommendations (Now inside main content) -->
+      <div class="dark-card" style="margin-bottom:32px;">
+        <h3>Recommended for You</h3>
+        <div id="recommendations">
+          <div class="loading" style="color:#475569;">Loading...</div>
+        </div>
+      </div>
+
+    </div>
   </div>
+
+  <footer class="main-footer">
+    <p class="dev-title">Developed by</p>
+    <div class="team-names">
+      <a href="https://www.linkedin.com/in/akula-vaishnavi-663873281/" target="_blank">Akula Vaishnavi</a>
+      <a href="https://www.linkedin.com/in/shashinandini-katteboina-0802a62b0/" target="_blank">Katteboina
+        ShashiNandini</a>
+      <a href="https://www.linkedin.com/in/vigneshwar-pokala-14b24931b/" target="_blank">Pokala Vigneshwar</a>
+    </div>
+  </footer>
 
   <script src="js/api.js"></script>
   <script src="js/dashboard.js"></script>
-
 </body>
+
 </html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Random — My Wishlist</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="main-nav">
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Shared navbar logic -->
+    </div>
+  </nav>
+
+  <div class="container" style="max-width:1000px; padding-top:48px;">
+    <!-- NOTIFICATIONS SECTION -->
+    <div id="notifications-container" style="display:none; margin-bottom: 48px;">
+      <h3 style="font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 16px; display:flex; align-items:center; gap:8px;">
+        <span style="background:#fecaca; color:#ef4444; width:28px; height:28px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:14px;">🔔</span>
+        Pending Invitations
+      </h3>
+      <div id="notifications-list" style="display:grid; gap:12px;"></div>
+    </div>
+
+    <div class="wishlist-header" style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:40px;">
+      <div>
+        <h2 style="font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">My Problem Collections</h2>
+        <p style="color:#64748b; font-size: 14px;">Collections you have created personally.</p>
+      </div>
+      <button class="btn btn-primary" style="width: auto;" onclick="openNewCollectionModal()">+ Create Collection</button>
+    </div>
+
+    <!-- CARDS SECTION -->
+    <div id="collections-cards-container" style="margin-bottom: 60px;">
+      <div class="loading">Loading your collections...</div>
+    </div>
+
+    <div class="section-divider" style="margin-bottom: 40px;">
+      <h2 style="font-size: 24px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">Public & Shared Collections</h2>
+      <p style="color:#64748b; font-size: 14px;">Collections shared with you or made public by others.</p>
+    </div>
+
+    <!-- TABLE SECTION -->
+    <div class="card" style="padding: 0; overflow: hidden; border-radius: 12px;">
+      <table class="problems-table dashboard-table" style="background: #ffffff; margin-bottom: 0;">
+        <thead>
+          <tr>
+            <th style="padding-left: 24px;">COLLECTION NAME</th>
+            <th>OWNER</th>
+            <th>ITEMS</th>
+            <th style="padding-right: 24px;">ACTIONS</th>
+          </tr>
+        </thead>
+        <tbody id="collections-table-body">
+          <tr>
+            <td colspan="4" class="loading" style="padding: 40px; text-align: center;">Loading collections...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer class="main-footer">
+    <p class="dev-title">Developed by</p>
+    <div class="team-names">
+      <a href="#">Akula Vaishnavi</a>
+      <a href="#">Katteboina ShashiNandini</a>
+      <a href="#">Pokala Vigneshwar</a>
+    </div>
+  </footer>
+
+  <!-- CREATE COLLECTION MODAL -->
+  <div id="collection-modal" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+      <span class="close" onclick="closeModal('collection-modal')">&times;</span>
+      <h3>New Collection</h3>
+      <div class="form-group" style="margin-top:20px;">
+        <label>Collection Name</label>
+        <input type="text" id="collection-name" placeholder="e.g. Blind 75, Core Java">
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; gap:8px;">
+        <input type="checkbox" id="is-public" style="width:auto;">
+        <label for="is-public">Make this collection public</label>
+      </div>
+      <button class="btn btn-primary btn-block" onclick="handleCreateCollection()">Create Collection</button>
+    </div>
+  </div>
+
+  <!-- SHARE COLLECTION MODAL -->
+  <div id="share-modal" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+      <span class="close" onclick="closeModal('share-modal')">&times;</span>
+      <h3>Share Collection</h3>
+      <p id="sharing-collection-info" style="font-size:14px; color:#64748b; margin-top:8px;"></p>
+      <div class="form-group" style="margin-top:20px;">
+        <label>Username to share with</label>
+        <input type="text" id="share-username" placeholder="Enter username">
+      </div>
+      <button class="btn btn-primary btn-block" onclick="handleShareCollection()">Share Now</button>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/wishlist.js"></script>
+</body>
+</html>

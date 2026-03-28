@@ -1,38 +1,79 @@
-requireAuth();
+// Shared navbar is handled by api.js renderNavbar
+
 let editor;
 let currentProblemId;
 let currentExamples = [];
-let currentProblemLabels = []; // labels for each input line (e.g. ['nums', 'target'])
-let currentSubmissions =[]; // Add this new variable to store past submissions
+let currentProblemLabels = [];
+let currentSubmissions = [];
 
 const defaultCode = {
   python: '# Write your solution here\n\n',
-  java: 'import java.util.Scanner;\n\npublic class Solution {\n    public static void main(String[] args) {\n        Scanner sc = new Scanner(System.in);\n        // Write your solution here\n    }\n}\n',
-  cpp: '#include<iostream>\nusing namespace std;\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n',
-  c: '#include<stdio.h>\n\nint main() {\n    // Write your solution here\n    return 0;\n}\n'
-};
+  java: `import java.util.Scanner;
 
-function logout() {
-  removeToken();
-  window.location.href = 'index.html';
-}
+public class Main {
+  public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+    // Write your solution here
+  }
+}`,
+  javascript: '// Write your solution here\n\n',
+  cpp: `#include<iostream>
+using namespace std;
+
+int main() {
+  // Write your solution here
+  return 0;
+}`
+};
 
 function getProblemId() {
   const params = new URLSearchParams(window.location.search);
   return params.get('id');
 }
 
-// tab switching
-function showTab(tab) {
-  document.getElementById('panel-result').style.display = tab === 'result' ? 'block' : 'none';
-  document.getElementById('panel-testcases').style.display = tab === 'testcases' ? 'block' : 'none';
-  document.getElementById('tab-result').style.color = tab === 'result' ? '#6366f1' : '#a0a0b0';
-  document.getElementById('tab-result').style.borderBottom = tab === 'result' ? '2px solid #6366f1' : 'none';
-  document.getElementById('tab-testcases').style.color = tab === 'testcases' ? '#6366f1' : '#a0a0b0';
-  document.getElementById('tab-testcases').style.borderBottom = tab === 'testcases' ? '2px solid #6366f1' : 'none';
+// LEFT TAB SWITCHING
+function switchLeftTab(tab) {
+  document.querySelectorAll('.problem-left-section .section-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.problem-left-section .tab-pane').forEach(p => p.classList.remove('active'));
+
+  event.target.classList.add('active');
+  document.getElementById(`tab-content-${tab}`).classList.add('active');
 }
 
-// initialize Monaco Editor
+// CONSOLE TAB SWITCHING
+function switchConsoleTab(tab) {
+  document.querySelectorAll('.console-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.console-pane').forEach(p => p.classList.remove('active'));
+
+  event.target.classList.add('active');
+  document.getElementById(`console-${tab}`).classList.add('active');
+}
+
+function toggleConsole() {
+  const consoleEl = document.querySelector('.fixed-console');
+  consoleEl.style.display = consoleEl.style.display === 'none' ? 'flex' : 'none';
+  setTimeout(() => { if (editor) editor.layout(); }, 50);
+}
+
+function showToast(message, type = 'success') {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const toast = document.createElement('div');
+  toast.style.background = type === 'success' ? '#dcfce7' : '#fee2e2';
+  toast.style.color = type === 'success' ? '#15803d' : '#b91c1c';
+  toast.style.border = type === 'success' ? '1px solid #86efac' : '1px solid #fca5a5';
+  toast.style.padding = '12px 24px';
+  toast.style.borderRadius = '8px';
+  toast.style.marginBottom = '10px';
+  toast.style.fontWeight = '600';
+  toast.textContent = message;
+
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Monaco Editor
 require.config({
   paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }
 });
@@ -41,314 +82,138 @@ require(['vs/editor/editor.main'], function () {
   editor = monaco.editor.create(document.getElementById('editor'), {
     value: defaultCode.python,
     language: 'python',
-    theme: 'vs-dark',
+    theme: 'vs',
     fontSize: 14,
     minimap: { enabled: false },
-    automaticLayout: true,
-    scrollBeyondLastLine: false,
-    lineNumbers: 'on',
-    roundedSelection: true,
-    padding: { top: 12 }
+    automaticLayout: true
   });
 
   loadProblem();
 });
 
-document.getElementById('language-select').addEventListener('change', function () {
-  const lang = this.value;
-  const monacoLang = lang === 'cpp' ? 'cpp' : lang === 'c' ? 'c' : lang;
-  monaco.editor.setModelLanguage(editor.getModel(), monacoLang);
+function changeLanguage() {
+  const lang = document.getElementById('language-select').value;
+  monaco.editor.setModelLanguage(editor.getModel(), lang);
   editor.setValue(defaultCode[lang]);
-});
+}
 
 async function loadProblem() {
   const id = getProblemId();
-  if (!id) {
-    window.location.href = 'problems.html';
-    return;
-  }
+  if (!id) return;
 
   currentProblemId = id;
 
   try {
     const problem = await problems.getById(id);
 
-    document.title = `DSA Platform — ${problem.title}`;
     document.getElementById('problem-title').textContent = problem.title;
     document.getElementById('problem-description').textContent = problem.description;
 
-    const diffBadge = document.getElementById('problem-difficulty');
-    diffBadge.textContent = problem.difficulty;
-    diffBadge.className = `badge badge-${problem.difficulty}`;
-
-    document.getElementById('problem-topic').textContent = problem.topic;
-
-    // store examples and input labels for run button
-    currentExamples = problem.examples || [];
+    currentExamples = Array.isArray(problem.examples) ? problem.examples : [];
     currentProblemLabels = problem.input_labels
       ? problem.input_labels.split(',').map(l => l.trim())
       : [];
 
-    // show examples
-    const examplesDiv = document.getElementById('problem-examples');
-    if (currentExamples.length > 0) {
-      currentExamples.forEach((ex, i) => {
-        // Split multi-line input into individual labeled variables
-        const inputLines = ex.input.replace(/\\n/g, '\n').split('\n').filter(l => l.trim() !== '');
-        const inputLabels = currentProblemLabels.length > 0 ? currentProblemLabels : null;
-
-        let inputHTML = '';
-        inputLines.forEach((line, idx) => {
-          const label = (inputLabels && inputLabels[idx]) ? inputLabels[idx] : `input${inputLines.length > 1 ? (idx + 1) : ''}`;
-          inputHTML += `
-            <div style="margin-bottom:4px;">
-              <span style="color:#6366f1; font-family:monospace;">${label}</span>
-              <span style="color:#a0a0b0; font-family:monospace;"> = </span>
-              <span style="color:#e0e0e0; font-family:monospace;">${line.trim()}</span>
-            </div>`;
-        });
-
-        examplesDiv.innerHTML += `
-          <div class="example-box" style="margin-bottom:12px; padding:14px; background:#0f0f23; border-radius:8px; border-left:3px solid #6366f1;">
-            <strong style="color:#a0a0b0; font-size:12px; text-transform:uppercase; letter-spacing:1px;">Example ${i + 1}</strong>
-            <div style="margin-top:10px; margin-bottom:8px;">
-              <div style="color:#a0a0b0; font-size:12px; text-transform:uppercase; margin-bottom:6px;">Input</div>
-              ${inputHTML}
-            </div>
-            <div>
-              <div style="color:#a0a0b0; font-size:12px; text-transform:uppercase; margin-bottom:6px;">Output</div>
-              <span style="color:#22c55e; font-family:monospace;">${ex.expected_output}</span>
-            </div>
-          </div>
-        `;
-      });
-    }
-
-    document.getElementById('problem-loading').style.display = 'none';
-    document.getElementById('problem-content').style.display = 'block';
-
+    renderExamples();
     loadMySubmissions(id);
 
   } catch (err) {
-    document.getElementById('problem-loading').textContent = 'Failed to load problem.';
+    console.log(err);
   }
+}
+
+function renderExamples() {
+  const examplesDiv = document.getElementById('problem-examples');
+  examplesDiv.innerHTML = '';
+
+  currentExamples.forEach((ex, i) => {
+    examplesDiv.innerHTML += `
+      <div class="example-box">
+        <strong>Example ${i + 1}</strong>
+        <pre>Input:
+${ex.input}
+
+Output:
+${ex.expected_output}</pre>
+      </div>
+    `;
+  });
 }
 
 async function loadMySubmissions(problemId) {
   try {
     const data = await submissions.getMySubmissions();
-    // Save to our global variable so we can access the code when clicked
     currentSubmissions = data.filter(s => String(s.problem_id) === String(problemId));
 
     const container = document.getElementById('submissions-list');
-    if (currentSubmissions.length === 0) {
-      container.innerHTML = '<p style="color:#555; font-size:14px;">No submissions yet.</p>';
-      return;
-    }
-
-    let html = '';
-    currentSubmissions.slice(0, 5).forEach((s, index) => {
-      // Changed to toLocaleString() to show both Date AND Time
-      const dateAndTime = new Date(s.submitted_at).toLocaleString(); 
-      
-      // Added cursor:pointer, hover effects, and onclick="viewPastSubmission(index)"
-      html += `
-        <div onclick="viewPastSubmission(${index})" 
-             style="display:flex; justify-content:space-between; align-items:center;
-             padding:8px 12px; background:#0f0f23; border-radius:8px; margin-bottom:8px; 
-             cursor:pointer; border: 1px solid transparent; transition: border 0.2s;"
-             onmouseover="this.style.border='1px solid #6366f1'" 
-             onmouseout="this.style.border='1px solid transparent'">
-          <span class="badge badge-${s.status}">${s.status}</span>
-          <span style="color:#a0a0b0; font-size:13px;">${s.language}</span>
-          <span style="color:#555; font-size:12px;">${dateAndTime}</span>
-        </div>
-      `;
-    });
-    container.innerHTML = html;
+    container.innerHTML = currentSubmissions.length === 0
+      ? '<p>No submissions yet.</p>'
+      : currentSubmissions.map(s => `
+          <div>
+            ${s.status} | ${s.language}
+          </div>
+        `).join('');
   } catch (err) {
-    console.log('Could not load submissions');
+    console.log(err);
   }
 }
-// RUN against visible example test cases only
+
+// ✅ CLEAN MULTI TESTCASE RUN
 async function runCode() {
   const language = document.getElementById('language-select').value;
   const code = editor.getValue();
   const resultContent = document.getElementById('result-content');
 
   if (!code.trim()) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Please write some code first.</span>';
+    resultContent.innerHTML = 'Write code first.';
     return;
   }
 
-  if (currentExamples.length === 0) {
-    resultContent.innerHTML = '<span style="color:#a0a0b0;">No example test cases available.</span>';
-    return;
-  }
-
-  resultContent.innerHTML = '<span style="color:#fbbf24;">Running against example test cases...</span>';
-  showTab('result');
+  resultContent.innerHTML = 'Running...';
 
   try {
-    let allPassed = true;
     let resultsHTML = '';
 
     for (let i = 0; i < currentExamples.length; i++) {
       const ex = currentExamples[i];
 
-      const res = await fetch('https://adaptive-coding-platform.onrender.com/api/submissions/run', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${getToken()}`
-        },
-        body: JSON.stringify({ language, code, input: ex.input })
-      });
+      const data = await submissions.run(language, code, ex.input);
 
-      const data = await res.json();
-      const actualOutput = data.stdout ? data.stdout.trim() : '';
-      const expectedOutput = ex.expected_output.trim();
-      const passed = actualOutput === expectedOutput;
-      if (!passed) allPassed = false;
+      const actual = data.stdout?.trim() || '';
+      const expected = ex.expected_output.trim();
+      const passed = actual === expected;
 
       resultsHTML += `
-        <div style="margin-bottom:12px; padding:12px; background:#0f0f23;
-          border-radius:8px; border-left:3px solid ${passed ? '#22c55e' : '#ef4444'};">
-          <div style="margin-bottom:8px;">
-            <span style="color:#a0a0b0; font-size:12px; text-transform:uppercase;">Case ${i + 1}</span>
-            <span style="float:right; color:${passed ? '#4ade80' : '#f87171'};
-              font-size:13px; font-weight:bold;">
-              ${passed ? 'Passed' : 'Failed'}
-            </span>
-          </div>
-          <div style="font-family:monospace; font-size:13px; margin-bottom:4px;">
-            <span style="color:#6366f1;">Input:</span>
-            ${ex.input.replace(/\\n/g, '\n').split('\n').filter(l => l.trim()).map((line, idx) => {
-              const labels = currentProblemLabels || [];
-              const label = labels[idx] || (idx === 0 ? 'nums' : idx === 1 ? 'target' : `var${idx + 1}`);
-              return `<div style="padding-left:12px; color:#e0e0e0;"><span style="color:#a0a0b0;">${label} = </span>${line.trim()}</div>`;
-            }).join('')}
-          </div>
-          <div style="font-family:monospace; font-size:13px; margin-bottom:4px;">
-            <span style="color:#22c55e;">Expected: </span>
-            <span style="color:#e0e0e0;">${expectedOutput}</span>
-          </div>
-          <div style="font-family:monospace; font-size:13px;">
-            <span style="color:#fbbf24;">Your output: </span>
-            <span style="color:#e0e0e0;">${actualOutput || (data.stderr ? data.stderr : 'No output')}</span>
-          </div>
-        </div>
+        <div>
+          <strong>Case ${i + 1}:</strong> ${passed ? '✅ Passed' : '❌ Failed'}<br/>
+          Input: ${ex.input}<br/>
+          Expected: ${expected}<br/>
+          Output: ${actual || data.stderr}
+        </div><br/>
       `;
     }
 
-    resultContent.innerHTML = `
-      <div style="margin-bottom:14px; padding:10px 14px; border-radius:8px;
-        background:${allPassed ? '#052e16' : '#3b0000'};
-        color:${allPassed ? '#4ade80' : '#f87171'};
-        font-size:16px; font-weight:bold;">
-        ${allPassed ? 'All example cases passed! Now click Submit.' : 'Some cases failed. Fix your code.'}
-      </div>
-      ${resultsHTML}
-    `;
+    resultContent.innerHTML = resultsHTML;
 
   } catch (err) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Run failed. Make sure backend is running.</span>';
+    resultContent.innerHTML = 'Error running code.';
   }
 }
 
-// SUBMIT against all hidden test cases
 async function submitCode() {
   const language = document.getElementById('language-select').value;
   const code = editor.getValue();
-  const resultContent = document.getElementById('result-content');
-
-  if (!code.trim()) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Please write some code first.</span>';
-    return;
-  }
-
-  resultContent.innerHTML = '<span style="color:#fbbf24;">Submitting... running against all test cases...</span>';
-  showTab('result');
 
   try {
     const data = await submissions.submit(currentProblemId, language, code);
-
-    if (data.status === 'accepted') {
-      resultContent.innerHTML = `
-        <div style="color:#4ade80; font-size:20px; font-weight:bold; margin-bottom:8px;">
-          Accepted
-        </div>
-        <div style="color:#a0a0b0; font-size:14px;">
-          All test cases passed! Execution time: ${data.execution_time}s
-        </div>
-      `;
-    } else if (data.status === 'wrong_answer') {
-      resultContent.innerHTML = `
-        <div style="color:#f87171; font-size:20px; font-weight:bold; margin-bottom:8px;">
-          Wrong Answer
-        </div>
-        <div style="color:#a0a0b0; font-size:14px;">
-          Your output did not match the expected output. Check your logic and use Run to debug.
-        </div>
-      `;
-    } else if (data.status === 'error') {
-      resultContent.innerHTML = `
-        <div style="color:#c084fc; font-size:20px; font-weight:bold; margin-bottom:8px;">
-          Error
-        </div>
-        <div style="color:#a0a0b0; font-size:14px; font-family:monospace;">
-          ${data.error || 'Runtime error in your code.'}
-        </div>
-      `;
-    }
-
+    showToast(data.status === 'accepted' ? 'Accepted' : 'Wrong Answer');
     loadMySubmissions(currentProblemId);
-
-  } catch (err) {
-    resultContent.innerHTML = '<span style="color:#f87171;">Submission failed. Make sure backend is running.</span>';
+  } catch {
+    showToast('Submission failed', 'error');
   }
 }
 
 function resetCode() {
   const lang = document.getElementById('language-select').value;
   editor.setValue(defaultCode[lang]);
-}
-// Function to show past submission in a Modal popup (LeetCode style)
-function viewPastSubmission(index) {
-  const submission = currentSubmissions[index];
-  if (!submission || !submission.code) return;
-
-  // 1. Set the Title/Status (Color it green if accepted, red if wrong)
-  const statusEl = document.getElementById('modal-status');
-  statusEl.textContent = submission.status;
-  if (submission.status.toLowerCase() === 'accepted') {
-    statusEl.style.color = '#4ade80'; // Green
-  } else {
-    statusEl.style.color = '#f87171'; // Red
-  }
-
-  // 2. Fill in the details
-  document.getElementById('modal-lang').textContent = submission.language;
-  const execTime = submission.execution_time ? parseFloat(submission.execution_time).toFixed(3) + 's' : 'N/A';
-  document.getElementById('modal-time').textContent = execTime;
-  document.getElementById('modal-date').textContent = new Date(submission.submitted_at).toLocaleString();
-  
-  // 3. Put the code in the read-only block
-  document.getElementById('modal-code').textContent = submission.code;
-
-  // 4. Show the modal
-  document.getElementById('submission-modal').style.display = 'block';
-}
-
-// Function to close the modal
-function closeModal() {
-  document.getElementById('submission-modal').style.display = 'none';
-}
-
-// Close the modal if the user clicks anywhere outside of it
-window.onclick = function(event) {
-  const modal = document.getElementById('submission-modal');
-  if (event.target === modal) {
-    modal.style.display = "none";
-  }
 }

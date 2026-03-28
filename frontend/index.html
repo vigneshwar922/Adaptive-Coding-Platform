@@ -1,39 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Adaptive-Coding-Platform — Login</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
 
-  <nav>
-    <a href="index.html" class="logo">Adaptive-Coding-Platform</a>
-    <div class="nav-links">
-      <a href="register.html">Register</a>
+  <nav class="main-nav">
+    <a href="index.html" class="logo">Random</a>
+    <div id="nav-actions" class="nav-links">
+      <!-- Shared navbar logic from api.js -->
     </div>
   </nav>
 
-  <div class="auth-container">
-    <h2>Welcome Back</h2>
+  <div class="landing-container" id="guest-content" style="display:none;">
+    <div class="hero-section">
+      <h1 class="hero-title">Master Coding with <span class="brand-text">Random</span></h1>
+      <p class="hero-subtitle">The ultimate platform to practice DSA and crack your dream tech job.</p>
 
-    <div id="error-msg"></div>
+      <div class="auth-card">
+        <h3>Login to your account</h3>
+        <p id="error-msg"></p>
+        <div class="form-group">
+          <label>Email or Username</label>
+          <input type="text" id="email" placeholder="Enter email/username">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="password" placeholder="••••••••">
+        </div>
+        <button class="btn btn-primary btn-block" onclick="handleLogin()">Login</button>
+        <div class="auth-footer">
+          Don't have an account? <a href="register.html">Sign up now</a>
+        </div>
+      </div>
+    </div>
+  </div>
 
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="email" placeholder="Enter your email">
+  <div class="home-container" id="auth-content" style="display:none;">
+    <div class="welcome-banner">
+      <h1>Welcome back!</h1>
+      <p>Continue your journey. Pick up where you left off.</p>
+      <button class="btn btn-primary" onclick="window.location.href='problems.html'">View All Problems</button>
     </div>
 
-    <div class="form-group">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Enter your password">
+    <div class="about-section" style="text-align: center; margin-bottom: 40px; margin-top: 10px;">
+      <h2 style="color: #6366f1; margin-bottom: 12px;">About Random</h2>
+      <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.6;">
+        Random is an adaptive platform dedicated to helping you master Data Structures and Algorithms. 
+        Solve curated problems, track your performance, and crack your dream tech interviews.
+      </p>
     </div>
 
-    <button class="btn btn-primary" onclick="handleLogin()">Login</button>
-
-    <div class="auth-link">
-      Don't have an account? <a href="register.html">Register here</a>
+    <div class="features-grid">
+      <div class="feature-card" onclick="window.location.href='problems.html'">
+        <h3>Problems</h3>
+        <p>Solve curated DSA problems</p>
+      </div>
+      <div class="feature-card" onclick="window.location.href='dashboard.html'">
+        <h3>My Progress</h3>
+        <p>Track your performance</p>
+      </div>
+      <div class="feature-card" onclick="window.location.href='wishlist.html'">
+        <h3>Wishlist</h3>
+        <p>Your saved collections</p>
+      </div>
     </div>
   </div>
 
@@ -41,12 +76,14 @@
   <script src="js/auth.js"></script>
 
 </body>
-<footer class="footer">
-    <p>Developed by</p>
-    <div class="team-links">
-        <a href="https://linkedin.com/in/akula-vaishnavi-663873281" target="_blank">Akula Vaishnavi</a>
-        <a href="https://linkedin.com/in/shashinandini-katteboina-0802a62b0" target="_blank">Katteboina ShashiNandini</a>
-        <a href="https://linkedin.com/in/vigneshwar-pokala-14b24931b" target="_blank"> Pokala Vigneshwar</a>
-    </div>
+<footer class="main-footer">
+  <p class="dev-title">Developed by</p>
+  <div class="team-names">
+    <a href="https://www.linkedin.com/in/akula-vaishnavi-663873281/" target="_blank">Akula Vaishnavi</a>
+    <a href="https://www.linkedin.com/in/shashinandini-katteboina-0802a62b0/" target="_blank">Katteboina
+      ShashiNandini</a>
+    <a href="https://www.linkedin.com/in/vigneshwar-pokala-14b24931b/" target="_blank">Pokala Vigneshwar</a>
+  </div>
 </footer>
+
 </html>
