@@ -126,21 +126,7 @@ async function handleWishlistClick(event, problemId) {
     return;
   }
 
-  // 1. Add to default "Wishlist" collection first
-  try {
-    const collections = await wishlist.getCollections();
-    if (Array.isArray(collections)) {
-      let wishlistCol = collections.find(c => c.name.toLowerCase() === 'wishlist');
-      if (!wishlistCol) {
-        wishlistCol = await wishlist.createCollection('Wishlist');
-      }
-      await wishlist.addItem(wishlistCol.id, problemId);
-    }
-  } catch (err) {
-    console.error('Failed to add to default wishlist', err);
-  }
-
-  // 2. Show the menu for more options
+  // Show the menu for more options
   showWishlistMenu(event, problemId);
 }
 

@@ -8,10 +8,12 @@ const {
   addItem, 
   shareCollection,
   getNotifications,
-  respondToShare
+  respondToShare,
+  getCollectionItems
 } = require('../controllers/wishlistController');
 
 router.get('/collections', auth, getCollections);
+router.get('/collections/:id/items', auth, getCollectionItems);
 router.post('/collections', auth, createCollection);
 router.delete('/collections/:id', auth, deleteCollection);
 router.post('/add', auth, addItem);

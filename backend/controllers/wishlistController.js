@@ -24,6 +24,40 @@ exports.getCollections = async (req, res) => {
   }
 };
 
+exports.getCollectionItems = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    
+    // Check access
+    const accessCheck = await pool.query(
+      `SELECT c.id FROM wishlist_collections c
+       LEFT JOIN wishlist_shares s ON c.id = s.collection_id
+       WHERE c.id = $1 AND (
+         c.user_id = $2 OR c.is_public = true OR (s.shared_with_user_id = $2 AND s.status = 'accepted')
+       )`,
+      [id, userId]
+    );
+
+    if (accessCheck.rows.length === 0) {
+      return res.status(403).json({ message: 'Unauthorized' });
+    }
+
+    const items = await pool.query(
+      `SELECT p.*, wi.added_at 
+       FROM problems p
+       JOIN wishlist_items wi ON p.id = wi.problem_id
+       WHERE wi.collection_id = $1`,
+      [id]
+    );
+
+    res.json(items.rows);
+  } catch (err) {
+    console.error('getCollectionItems error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
 exports.createCollection = async (req, res) => {
   try {
     const { name, is_public } = req.body;

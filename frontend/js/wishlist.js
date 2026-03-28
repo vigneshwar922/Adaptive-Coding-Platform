@@ -44,8 +44,8 @@ async function loadCollections() {
             <div class="dots-menu" onclick="toggleDotsMenu(event, '${c.id}')">
               <span class="dots-icon">⋮</span>
               <div class="dropdown-menu" id="dropdown-${c.id}">
-                <div class="dropdown-item" onclick="openShareModal('${c.id}', '${c.name}')">Share</div>
-                <div class="dropdown-item delete" onclick="handleDeleteCollection('${c.id}')">Delete</div>
+                <div class="dropdown-item" onclick="event.stopPropagation(); openShareModal('${c.id}', '${c.name.replace(/'/g, "\\'")}')">Share</div>
+                <div class="dropdown-item delete" onclick="event.stopPropagation(); handleDeleteCollection('${c.id}')">Delete</div>
               </div>
             </div>
             <div class="collection-info-group">
