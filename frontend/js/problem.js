@@ -182,10 +182,15 @@ async function loadMySubmissions(problemId) {
     currentSubmissions.forEach((s) => {
       const dateStr = new Date(s.submitted_at).toLocaleString();
       html += `
-        <div class="submission-item" style="display:flex; justify-content:space-between; padding:12px; border-bottom:1px solid #f1f5f9; font-size:14px;">
-          <span class="status-badge-${s.status.toLowerCase()}">${s.status}</span>
-          <span style="color:#64748b;">${s.language}</span>
-          <span style="color:#94a3b8; font-size:12px;">${dateStr}</span>
+        <div class="submission-item" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid #f1f5f9; font-size:14px;">
+          <div style="display:flex; flex-direction:column; gap:4px;">
+            <span class="status-badge-${s.status.toLowerCase()}" style="font-weight:600;">${s.status.replace(/_/g, ' ').toUpperCase()}</span>
+            <span style="color:#64748b; font-size:12px;">Runtime: ${s.execution_time || 'N/A'}s</span>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:4px; text-align:right;">
+            <span style="color:#64748b; text-transform:capitalize; font-weight:500;">${s.language}</span>
+            <span style="color:#94a3b8; font-size:12px;">${dateStr}</span>
+          </div>
         </div>
       `;
     });

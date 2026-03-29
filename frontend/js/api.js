@@ -305,5 +305,27 @@ const wishlist = {
       });
       return await safeJson(res);
     } catch (e) { return { error: "Response failed" }; }
+  },
+  removeItem: async (collection_id, problem_id) => {
+    try {
+      const res = await fetch(`${API_URL}/wishlist/remove`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${getToken()}`
+        },
+        body: JSON.stringify({ collection_id, problem_id })
+      });
+      return await safeJson(res);
+    } catch (e) { return { error: "Remove failed" }; }
+  },
+  unfollowCollection: async (id) => {
+    try {
+      const res = await fetch(`${API_URL}/wishlist/unfollow/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${getToken()}` }
+      });
+      return await safeJson(res);
+    } catch (e) { return { error: "Unfollow failed" }; }
   }
 };

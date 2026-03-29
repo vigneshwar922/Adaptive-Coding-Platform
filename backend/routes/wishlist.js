@@ -9,7 +9,9 @@ const {
   shareCollection,
   getNotifications,
   respondToShare,
-  getCollectionItems
+  getCollectionItems,
+  removeItem,
+  unfollowCollection
 } = require('../controllers/wishlistController');
 
 router.get('/collections', auth, getCollections);
@@ -20,5 +22,7 @@ router.post('/add', auth, addItem);
 router.post('/share', auth, shareCollection);
 router.get('/notifications', auth, getNotifications);
 router.post('/notifications/:id/respond', auth, respondToShare);
+router.delete('/remove', auth, removeItem);
+router.delete('/unfollow/:id', auth, unfollowCollection);
 
 module.exports = router;
