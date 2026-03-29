@@ -187,3 +187,47 @@ exports.respondToShare = async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 };
+
+exports.removeItem = async (req, res) => {
+  try {
+    const { collection_id, problem_id } = req.body;
+    const userId = req.user.id;
+
+    // Verify ownership
+    const collection = await pool.query(
+      'SELECT id FROM wishlist_collections WHERE id = $1 AND user_id = $2',
+      [collection_id, userId]
+    );
+
+    if (collection.rows.length === 0) {
+      return res.status(403).json({ message: 'Unauthorized or not found' });
+    }
+
+    await pool.query(
+      'DELETE FROM wishlist_items WHERE collection_id = $1 AND problem_id = $2',
+      [collection_id, problem_id]
+    );
+
+    res.json({ message: 'Item removed successfully' });
+  } catch (err) {
+    console.error('removeItem error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};
+
+exports.unfollowCollection = async (req, res) => {
+  try {
+    const { id } = req.params; // collection_id
+    const userId = req.user.id;
+
+    await pool.query(
+      "DELETE FROM wishlist_shares WHERE collection_id = $1 AND shared_with_user_id = $2 AND status = 'accepted'",
+      [id, userId]
+    );
+
+    res.json({ message: 'Unfollowed collection successfully' });
+  } catch (err) {
+    console.error('unfollowCollection error:', err);
+    res.status(500).json({ message: 'Server Error' });
+  }
+};

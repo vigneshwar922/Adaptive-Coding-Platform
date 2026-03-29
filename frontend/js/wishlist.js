@@ -73,8 +73,14 @@ async function loadCollections() {
             <td style="padding-left:24px; font-weight:600; color:#1e293b;">${c.name}</td>
             <td style="color:#64748b;">${c.owner_name || 'System'}</td>
             <td style="color:#64748b;">${c.item_count || 0} items</td>
-            <td style="padding-right:24px;">
+            <td style="padding-right:24px; display:flex; justify-content:flex-end; align-items:center; gap:12px;">
               <a href="#" style="color:#6366f1; text-decoration:none; font-weight:500; font-size:14px;" onclick="viewCollection('${c.id}')">View Items</a>
+              <div style="position:relative; padding:4px; margin-top:-4px;" class="table-dots-container" onclick="toggleDotsMenu(event, 'shared-${c.id}')">
+                <span style="cursor:pointer; font-weight:bold; font-size:22px; color:#64748b; padding-left:4px;">⋮</span>
+                <div class="dropdown-menu" id="dropdown-shared-${c.id}" style="right:0; top:36px; min-width:150px;">
+                  <div class="dropdown-item delete" onclick="event.stopPropagation(); handleUnfollowCollection('${c.id}')">Remove / Unfollow</div>
+                </div>
+              </div>
             </td>
           </tr>
         `;
@@ -133,6 +139,20 @@ async function handleDeleteCollection(id) {
       loadCollections();
     } else {
       alert(res.error || 'Failed to delete');
+    }
+  } catch (err) {
+    alert('Something went wrong');
+  }
+}
+
+async function handleUnfollowCollection(id) {
+  if (!confirm('Are you sure you want to remove this shared collection from your view?')) return;
+  try {
+    const res = await wishlist.unfollowCollection(id);
+    if (res.message) {
+      loadCollections();
+    } else {
+      alert(res.error || 'Failed to remove');
     }
   } catch (err) {
     alert('Something went wrong');

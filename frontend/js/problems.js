@@ -157,6 +157,14 @@ async function showWishlistMenu(event, problemId) {
     }
     
     html += '<hr><div class="menu-item" style="color:#6366f1; font-weight:600;" onclick="createNewCollectionAndAdd(\'' + problemId + '\')">+ Create Collection</div>';
+    
+    // If viewing a specific collection, add Delete option
+    const params = new URLSearchParams(window.location.search);
+    const collectionId = params.get('collection');
+    if (collectionId) {
+       html += `<hr><div class="menu-item delete" style="color:#ef4444; font-weight:600;" onclick="handleRemoveFromCollection('${collectionId}', '${problemId}')">Delete from Collection</div>`;
+    }
+
     menu.innerHTML = html;
 
   } catch (err) {
@@ -194,6 +202,21 @@ async function createNewCollectionAndAdd(problemId) {
     document.getElementById('wishlist-popup').remove();
   } catch (err) {
     alert('Failed to create/add');
+  }
+}
+
+async function handleRemoveFromCollection(collectionId, problemId) {
+  if (!confirm('Are you sure you want to remove this problem from the collection?')) return;
+  try {
+    const res = await wishlist.removeItem(collectionId, problemId);
+    if (res.message) {
+      document.getElementById('wishlist-popup')?.remove();
+      loadProblems(); // Refresh the list
+    } else {
+      alert(res.error || 'Failed to remove problem');
+    }
+  } catch (err) {
+    alert('Something went wrong');
   }
 }
 
