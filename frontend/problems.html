@@ -62,6 +62,31 @@
     </div>
   </div>
 
+
+
+
+  <!-- Left side: Problems -->
+      <div class="problems-main">
+        <div class="section-header">
+          <h1 class="page-title">Problems</h1>
+          <div class="search-bar">
+            <input type="text" id="problem-search" placeholder="Search problems..." oninput="loadProblems()">
+          </div>
+        </div>
+
+        <!-- 👇 ADD THIS NEW BANNER CONTAINER 👇 -->
+        <div id="smart-recommendation-banner" style="display: none; margin-bottom: 24px;"></div>
+        <!-- 👆 ---------------------------- 👆 -->
+
+        <div id="problems-container">
+          <!-- Problems table will be injected here -->
+        </div>
+      </div>
+
+
+
+      
+
   <footer class="main-footer">
     <p class="dev-title">Developed by</p>
     <div class="team-names">
@@ -75,5 +100,6 @@
   <script src="js/problems.js"></script>
 
 </body>
+
 
 </html>

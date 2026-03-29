@@ -36,10 +36,15 @@ async function loadProblems() {
     }
 
     // Merge submissions
-    let userSubmissions = [];
+    let userSubmissions =[];
     if (isLoggedIn()) {
       userSubmissions = await submissions.getMySubmissions();
+      
+      // 👇 THIS IS THE NEW LINE WE ADDED 👇
+      // It triggers the smart banner at the top of the page based on your submissions!
+      loadSmartRecommendations(userSubmissions);
     }
+
     const statusMap = {};
     for (const sub of userSubmissions) {
       if (sub.status === 'accepted') {
@@ -228,6 +233,59 @@ function filterTopicsList() {
     const text = item.textContent.toLowerCase();
     item.style.display = text.includes(term) ? 'block' : 'none';
   });
+}
+
+
+async function loadSmartRecommendations(userSubmissions) {
+  if (!isLoggedIn()) return;
+  const banner = document.getElementById('smart-recommendation-banner');
+  
+  try {
+    const recs = await progress.getRecommendations();
+    if (!recs || recs.length === 0) return;
+
+    let message = "Based on your progress, we recommend:";
+    let bannerBg = "#f8fafc"; 
+    let borderColor = "#e2e8f0";
+
+    // Analyze recent submission context
+    if (userSubmissions && userSubmissions.length > 0) {
+      const lastSub = userSubmissions[0]; // The most recent submission
+      
+      if (lastSub.status === 'accepted') {
+        message = `🎉 Awesome job solving <b>${lastSub.title}</b>! Ready to level up? Try this next:`;
+        bannerBg = "#f0fdf4"; // Light green
+        borderColor = "#86efac";
+      } else {
+        message = `💡 Looks like you had trouble with <b>${lastSub.title}</b>. Let's brush up on the basics:`;
+        bannerBg = "#fffbeb"; // Light yellow/orange
+        borderColor = "#fde047";
+      }
+    }
+
+    const topRec = recs[0];
+    const diffColor = topRec.difficulty.toLowerCase() === 'easy' ? '#16a34a' : topRec.difficulty.toLowerCase() === 'medium' ? '#d97706' : '#dc2626';
+
+    banner.style.display = "block";
+    banner.innerHTML = `
+      <div style="background: ${bannerBg}; border: 1px solid ${borderColor}; padding: 20px 24px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+        <div>
+          <p style="color: #475569; font-size: 14px; margin-bottom: 8px;">${message}</p>
+          <h3 style="color: #1e293b; font-size: 18px; font-weight: 700;">${topRec.title}</h3>
+          <div style="margin-top: 6px; font-size: 13px;">
+            <span style="color: ${diffColor}; font-weight: 700; margin-right: 12px; text-transform: capitalize;">${topRec.difficulty}</span>
+            <span style="color: #64748b; background: rgba(255,255,255,0.6); padding: 2px 10px; border-radius: 12px; text-transform: capitalize;">Topic: ${topRec.topic}</span>
+          </div>
+        </div>
+        <div style="display: flex; gap: 12px;">
+          <button class="btn btn-outline" style="background: #ffffff; border-color: ${borderColor};" onclick="window.location.href='courses.html'">Review Course</button>
+          <button class="btn btn-primary" onclick="window.location.href='problem.html?id=${topRec.id}'">Solve Now</button>
+        </div>
+      </div>
+    `;
+  } catch (err) {
+    console.error("Failed to load smart recommendations", err);
+  }
 }
 
 // load problems when page opens
