@@ -1,161 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workspace - Adaptive Coding Platform</title>
-    <link rel="stylesheet" href="css/workspace.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workspace - Adaptive Coding Platform</title>
+  <link rel="stylesheet" href="css/workspace.css">
 </head>
 <body>
-    
-    <!-- Top Nav bar specific to the workspace -->
-    <div class="workspace-header">
-        <button onclick="window.location.href='courses.html'" class="back-btn">← Back to Courses</button>
-        <h2 id="header-title">Loading Course...</h2>
+  <!-- Top Nav bar -->
+  <div class="workspace-header">
+    <button onclick="window.location.href='courses.html'" class="back-btn">← Back to Courses</button>
+    <h2 id="header-title">Loading Course...</h2>
+  </div>
+
+  <div class="workspace-container">
+    <!-- Left Panel: Video & Editorial -->
+    <div class="learning-panel">
+      <div class="video-section">
+        <iframe id="course-video" width="100%" height="350" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="editorial-section">
+        <h1 id="course-title">Course Title</h1>
+        <p id="course-description">Course description will load here...</p>
+        <hr>
+        <h3>Task:</h3>
+        <p id="course-task">Listen to the video above and implement your solution on the right.</p>
+      </div>
     </div>
 
-    <div class="workspace-container">
-        <!-- Left Panel: Video & Editorial -->
-        <div class="learning-panel">
-            <div class="video-section">
-                <!-- iframe src will be injected by JavaScript -->
-                <iframe id="course-video" width="100%" height="350" frameborder="0" allowfullscreen></iframe>
-            </div>
-            
-            <div class="editorial-section">
-                <h1 id="course-title">Course Title</h1>
-                <p id="course-description">Course description will load here...</p>
-                
-                <hr>
-                
-                <h3>Task:</h3>
-                <p id="course-task">Listen to the video above and implement your solution on the right.</p>
-            </div>
-        </div>
-
-        <!-- Right Panel: Code Editor & Terminal -->
-        <div class="coding-panel">
-            <div class="editor-controls">
-            
-                    <select id="language-select" onchange="changeLanguage()" style="border: 1px solid #135fc2; border-radius: 6px; padding: 6px 12px; background: #c41212; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); outline: none;">
-              <option value="python">Python</option>
-              <option value="java">Java</option>
-              <option value="javascript">JavaScript</option>
-              <option value="c">C</option>
-              <option value="cpp">C++</option>
-    
-                </select>
-                <button id="run-btn">▶ Run Code</button>
-            </div>
-            
-            <div id="editor-container"></div>
-            
-            <div id="console-output">Ready. Write your code and click Run.</div>
-        </div>
+    <!-- Right Panel: Code Editor & Terminal -->
+    <div class="coding-panel">
+      <div class="editor-controls">
+        <select id="language-select" onchange="changeLanguage()" style="border:1px solid #135fc2; border-radius:6px; padding:6px 12px; background:#c41212; cursor:pointer;">
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+          <option value="javascript">JavaScript</option>
+          <option value="c">C</option>
+          <option value="cpp">C++</option>
+        </select>
+        <button id="run-btn">▶ Run Code</button>
+      </div>
+      <div id="editor-container"></div>
+      <div id="console-output">Ready. Write your code and click Run.</div>
     </div>
+  </div>
 
-    <!-- Load Monaco Editor -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
-    <script>
-        // ---------------------------------------------------------
-        // 1. DATA CONFIGURATION (Change your video IDs here!)
-        // ---------------------------------------------------------
-        const courseData = {'arrays': {
-    title: 'Arrays & Strings',
-    videoId: '37E9ckMDdTk', // only the ID, no ?si=...
-    desc: 'In this module, we will learn how to manipulate arrays and strings using the two-pointer technique.',
-    task: 'Write a function that reverses a string in-place.'
-},
-            'trees': {
-                title: 'Trees & Graphs',
-                videoId: 'oSWTXtMglKE', // REPLACE WITH YOUR REAL YOUTUBE ID
-                desc: 'Learn how to traverse trees using Depth First Search (DFS) and Breadth First Search (BFS).',
-                task: 'Implement an In-Order traversal of a Binary Search Tree.'
-            },
-            'dp': {
-                title: 'Dynamic Programming',
-                videoId: 'oBt53YbR9Kk', // REPLACE WITH YOUR REAL YOUTUBE ID
-                desc: 'Break down complex problems using memoization and tabulation.',
-                task: 'Solve the Fibonacci sequence using Dynamic Programming.'
-            },
-            'linkedlists': {
-                title: 'Linked Lists',
-                videoId: 'Hj_rA0dhr2I', // REPLACE WITH YOUR REAL YOUTUBE ID
-                desc: 'Understand singly and doubly linked lists and how to manipulate nodes.',
-                task: 'Write a function to reverse a singly linked list.'
-            },
-            'stacks': {
-                title: 'Stacks & Queues',
-                videoId: 'wjI1WNcIntg', // REPLACE WITH YOUR REAL YOUTUBE ID
-                desc: 'Explore stack and queue patterns, focusing on LIFO and FIFO methodologies.',
-                task: 'Implement a Queue using two Stacks.'
-            },
-            'sorting': {
-                title: 'Sorting & Searching',
-                videoId: 'RfXrG2-XWWU', // REPLACE WITH YOUR REAL YOUTUBE ID
-                desc: 'Build intuition for algorithms like Quicksort, Mergesort, and Binary Search.',
-                task: 'Write a Binary Search algorithm to find a target number in a sorted array.'
-            }
-        };
+  <!-- Load Monaco Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs/loader.min.js"></script>
+  <script>
+    // ---------------------------
+    // 1. Course Data
+    // ---------------------------
+    const courseData = {
+      'arrays': {
+        title: 'Arrays & Strings',
+        videoId: '37E9ckMDdTk',
+        desc: 'Learn how to manipulate arrays and strings using the two-pointer technique.',
+        task: 'Write a function that reverses a string in-place.'
+      },
+      'trees': {
+        title: 'Trees & Graphs',
+        videoId: 'oSWTXtMglKE',
+        desc: 'Traverse trees using DFS and BFS.',
+        task: 'Implement an In-Order traversal of a BST.'
+      }
+    };
 
-        // ---------------------------------------------------------
-        // 2. LOAD CORRECT COURSE CONTENT BASED ON URL
-        // ---------------------------------------------------------
-        // Example URL: workspace.html?course=arrays
-        const urlParams = new URLSearchParams(window.location.search);
-        const courseId = urlParams.get('course') || 'arrays'; // Default to arrays if none found
-        const currentCourse = courseData[courseId];
+    // ---------------------------
+    // 2. Load Course
+    // ---------------------------
+    const urlParams = new URLSearchParams(window.location.search);
+    const courseId = urlParams.get('course') || 'arrays';
+    const currentCourse = courseData[courseId];
 
-        if(currentCourse) {
-            document.getElementById('header-title').innerText = currentCourse.title;
-            document.getElementById('course-title').innerText = currentCourse.title;
-            document.getElementById('course-description').innerText = currentCourse.desc;
-            document.getElementById('course-task').innerText = currentCourse.task;
-            // Set Youtube video link dynamically
-            document.getElementById('course-video').src = `https://www.youtube.com/embed/${currentCourse.videoId}`;
+    if(currentCourse) {
+      document.getElementById('header-title').innerText = currentCourse.title;
+      document.getElementById('course-title').innerText = currentCourse.title;
+      document.getElementById('course-description').innerText = currentCourse.desc;
+      document.getElementById('course-task').innerText = currentCourse.task;
+      document.getElementById('course-video').src = `https://www.youtube.com/embed/${currentCourse.videoId}`;
+    }
+
+    // ---------------------------
+    // 3. Monaco Editor Init
+    // ---------------------------
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+      window.editor = monaco.editor.create(document.getElementById('editor-container'), {
+        value: `# Write your solution for ${currentCourse.title}\nprint("Hello World")`,
+        language: 'python',
+        theme: 'vs-dark',
+        fontSize: 14,
+        automaticLayout: true
+      });
+    });
+
+    // ---------------------------
+    // 4. Language Switching
+    // ---------------------------
+    function changeLanguage() {
+      const lang = document.getElementById('language-select').value;
+      monaco.editor.setModelLanguage(window.editor.getModel(), lang);
+    }
+
+    // ---------------------------
+    // 5. Run Code with Judge0 API
+    // ---------------------------
+    const languageMap = {
+      "python": 71,      // Python (3.8.1)
+      "java": 62,        // Java (OpenJDK 13.0.1)
+      "javascript": 63,  // JavaScript (Node.js 12.14.0)
+      "c": 50,           // C (GCC 9.2.0)
+      "cpp": 54          // C++ (GCC 9.2.0)
+    };
+
+    document.getElementById('run-btn').addEventListener('click', async () => {
+      const code = window.editor.getValue();
+      const lang = document.getElementById('language-select').value;
+      const outputConsole = document.getElementById('console-output');
+      outputConsole.innerHTML = "Running...<br>";
+
+      try {
+        const response = await fetch("https://judge0-ce.p.rapidapi.com/submissions?base64_encoded=false&wait=true", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-RapidAPI-Key": "YOUR_RAPIDAPI_KEY", // replace with your RapidAPI key
+            "X-RapidAPI-Host": "judge0-ce.p.rapidapi.com"
+          },
+          body: JSON.stringify({
+            source_code: code,
+            language_id: languageMap[lang]
+          })
+        });
+
+        const result = await response.json();
+        if(result.stdout) {
+          outputConsole.innerHTML += `<span style="color:#4CAF50;">Output:</span><br>${result.stdout.replace(/\n/g,"<br>")}`;
+        } else if(result.stderr) {
+          outputConsole.innerHTML += `<span style="color:#ff4444;">Error:</span><br>${result.stderr.replace(/\n/g,"<br>")}`;
+        } else {
+          outputConsole.innerHTML += `<span style="color:#ff4444;">Error:</span><br>${result.message || "Unknown error"}`;
         }
-
-        // ---------------------------------------------------------
-        // 3. INITIALIZE MONACO CODE EDITOR
-        // ---------------------------------------------------------
-        require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.36.1/min/vs' }});
-        require(['vs/editor/editor.main'], function() {
-            window.editor = monaco.editor.create(document.getElementById('editor-container'), {
-                value: `// Implement your solution for ${currentCourse.title}\n\nfunction solution() {\n    console.log("Testing my code!");\n}\n\nsolution();`,
-                language: 'javascript',
-                theme: 'vs-dark',
-                fontSize: 14,
-                automaticLayout: true // Ensures editor resizes correctly
-            });
-        });
-
-        // ---------------------------------------------------------
-        // 4. RUN BUTTON LOGIC (Basic JS Execution for demo)
-        // ---------------------------------------------------------
-        document.getElementById('run-btn').addEventListener('click', () => {
-            const code = window.editor.getValue();
-            const outputConsole = document.getElementById('console-output');
-            
-            outputConsole.innerHTML = "Running...<br>";
-            
-            // Overriding console.log temporarily to capture output in our div
-            const originalLog = console.log;
-            let outputString = "";
-            console.log = function(...args) {
-                outputString += args.join(' ') + "<br>";
-            };
-
-            try {
-                // Warning: eval is used here just to run JS purely in the browser for this demo.
-                eval(code); 
-                outputConsole.innerHTML += `<span style="color:#4CAF50;">Output:</span><br>${outputString}`;
-            } catch (error) {
-                outputConsole.innerHTML += `<span style="color:#ff4444;">Error: ${error.message}</span>`;
-            }
-
-            // Restore normal console.log
-            console.log = originalLog;
-        });
-    </script>
+      } catch (error) {
+        outputConsole.innerHTML += `<span style="color:#ff4444;">Error: ${error.message}</span>`;
+      }
+    });
+  </script>
 </body>
 </html>
