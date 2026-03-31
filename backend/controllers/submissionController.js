@@ -190,28 +190,46 @@ exports.getProblemSolutions = async (req, res) => {
 // Force-Sync Solutions Migration
 exports.syncSolutions = async (req, res) => {
   try {
-    console.log('--- Manual Sync: Migrating accepted submissions to solutions table ---');
+    console.log('--- Manual Sync Started ---');
     
-    // Clear the table to avoid duplication and start fresh during sync
+    // 1. Initial Check
+    const checkSubmissions = await pool.query("SELECT count(*) FROM submissions WHERE status ILIKE 'accepted'");
+    const availableCount = checkSubmissions.rows[0].count;
+    
+    if (parseInt(availableCount) === 0) {
+      return res.json({ 
+        success: false, 
+        message: 'No accepted submissions found in the submissions table to migration.' 
+      });
+    }
+
+    // 2. Clear and Refill
     await pool.query('DELETE FROM solutions');
 
+    // Use LEFT JOIN to ensure we get solutions even if the user record is missing
     const result = await pool.query(`
       INSERT INTO solutions (user_id, problem_id, user_name, language, code, execution_time, submitted_at)
       SELECT DISTINCT ON (s.user_id, s.problem_id) 
-             s.user_id::uuid, s.problem_id, u.name, s.language, s.code, s.execution_time, s.submitted_at
+             s.user_id::uuid, s.problem_id, COALESCE(u.name, 'User'), s.language, s.code, s.execution_time, s.submitted_at
       FROM submissions s
-      JOIN users u ON s.user_id::uuid = u.id::uuid
+      LEFT JOIN users u ON s.user_id::uuid = u.id::uuid
       WHERE s.status ILIKE 'accepted'
       ORDER BY s.user_id::uuid, s.problem_id, s.execution_time ASC
     `);
 
     res.json({ 
       success: true, 
-      message: 'Migration successful',
-      rowsSynced: result.rowCount
+      message: `Migration successful. Found ${availableCount} raw solutions, synced ${result.rowCount} unique best solutions.`,
+      availableRaw: availableCount,
+      syncedUnique: result.rowCount
     });
   } catch (err) {
-    console.error('Migration failed:', err);
-    res.status(500).json({ success: false, message: err.message });
+    console.error('Migration endpoint failed:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Migration failed', 
+      error: err.message,
+      hint: 'Ensure your database user has permissions to INSERT into the solutions table.'
+    });
   }
 };
