@@ -192,7 +192,21 @@ exports.syncSolutions = async (req, res) => {
   try {
     console.log('--- Manual Sync Started ---');
     
-    // 1. Initial Check
+    // 1. Ensure Table Exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS solutions (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        user_id UUID NOT NULL,
+        problem_id INTEGER NOT NULL,
+        user_name VARCHAR(100) NOT NULL,
+        language VARCHAR(50) NOT NULL,
+        code TEXT NOT NULL,
+        execution_time DOUBLE PRECISION DEFAULT 0,
+        submitted_at TIMESTAMP DEFAULT NOW()
+      );
+    `);
+
+    // 2. Initial Check
     const checkSubmissions = await pool.query("SELECT count(*) FROM submissions WHERE status ILIKE 'accepted'");
     const availableCount = checkSubmissions.rows[0].count;
     
@@ -203,7 +217,7 @@ exports.syncSolutions = async (req, res) => {
       });
     }
 
-    // 2. Clear and Refill
+    // 3. Clear and Refill
     await pool.query('DELETE FROM solutions');
 
     // Use LEFT JOIN to ensure we get solutions even if the user record is missing

@@ -10,7 +10,6 @@ const {
   shareCollection,
   getNotifications,
   respondToShare,
-  getCollectionItems,
   removeItem,
   unfollowCollection
 } = require('../controllers/wishlistController');
