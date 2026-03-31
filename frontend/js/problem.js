@@ -120,7 +120,15 @@ async function loadProblem() {
 
     document.title = `Random — ${problem.title}`;
     document.getElementById('problem-title').textContent = problem.title;
-    document.getElementById('problem-description').textContent = problem.description;
+     // Fix: Convert literal \n text from database into actual line breaks
+    const cleanDescription = (problem.description || '').replace(/\\n/g, '\n');
+    const descEl = document.getElementById('problem-description');
+    if (descEl) {
+      descEl.innerText = cleanDescription;
+      descEl.style.whiteSpace = 'pre-wrap';
+      descEl.style.lineHeight = '1.6';
+      descEl.style.color = '#334155';
+    }
 
     // FIX 1: Show the content and hide loading!
     const loadingEl = document.getElementById('problem-loading');
@@ -348,7 +356,7 @@ async function runCode() {
         resultsHTML += `
           <div style="margin-bottom: 16px; padding: 12px; border: 1px solid #fca5a5; border-radius: 8px; background: #fee2e2;">
             <strong style="color:#b91c1c; font-size: 15px;">Case ${i + 1}: ❌ ${data.status}</strong><br/>
-            <div style="margin-top: 8px; font-size: 13px; color: #7f1d1d;">
+            <div style="margin-top: 8px; font-size: 13px; color: #7f1d1d; white-space: pre-wrap;">
               ${isTLE ? `<strong>Reason:</strong> ${errData}` : `<strong>Execution Time:</strong> ${data.time || 'N/A'}s`}
             </div>
           </div>
