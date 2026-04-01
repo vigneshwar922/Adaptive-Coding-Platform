@@ -8,7 +8,7 @@ Here is the status of everything:
 1. **Heatmap Updates:** Submissions are now grouped clearly by month with custom tooltips (e.g., "1 submission on December 17th").
 2. **Dashboard Edit Profile Dialog:** The intrusive browser prompt was successfully replaced by a custom dropdown dialog for Username and Email.
 3. **Profile Photo Upload:** Selecting a profile photo properly opens your local file browser instead of a URL prompt.
-4. **Home Page & Icons:** Redundant emojis/images were removed, and the "About Random" section was added cleanly.
+4. **Home Page & Icons:** Redundant emojis/images were removed, and the "About BiteCode" section was added cleanly.
 5. **Problem List Status "Radio Buttons":** The list displays sleek radio-button-style SVGs (Empty circle for unsolved, Green check circle for solved, Red cross for wrong).
 6. **Toast Notifications:** The app drops down a pastel-colored Toast for Accepted (Green) and Wrong Answer (Red).
 7. **Wishlist Duplication Bug:** Clicking the `⋮` dots no longer forces the problem into a default "Wishlist" collection automatically.

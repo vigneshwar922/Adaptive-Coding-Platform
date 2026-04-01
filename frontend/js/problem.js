@@ -118,7 +118,7 @@ async function loadProblem() {
   try {
     const problem = await problems.getById(id);
 
-    document.title = `Random — ${problem.title}`;
+    document.title = `BiteCode — ${problem.title}`;
     document.getElementById('problem-title').textContent = problem.title;
     // Fix: Convert literal \n text AND HTML <br> tags from database into actual line breaks
     let cleanDescription = (problem.description || '')
